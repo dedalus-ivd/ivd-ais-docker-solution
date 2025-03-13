@@ -1,0 +1,18 @@
+services:
+    mongo: 
+        image: mongo:6.0.20
+        container_name: mongo
+        restart: on-failure
+        networks:
+          - ais_net
+        environment:
+          MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME}
+          MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
+        ports:
+          - '27017:27017'
+        volumes: 
+          - /opt/dedalus/docker/mongo/data:/data/db
+networks:
+  ais_net:
+    name: ${AIS_CORE_NETWORK}
+    external: true
