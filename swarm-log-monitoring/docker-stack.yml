@@ -1,0 +1,60 @@
+version: '3.8'
+
+networks:
+  monitoring:
+    driver: overlay
+
+volumes:
+  grafana-data:
+  loki-data:
+
+configs:
+  promtail-config:
+    file: ./promtail-config.yml
+  loki-config:
+    file: ./loki-config.yml
+
+services:
+  loki:
+    image: grafana/loki:latest
+    volumes:
+      - loki-data:/loki
+    networks:
+      - monitoring
+    configs:
+      - source: loki-config
+        target: /etc/loki/local-config.yaml
+    command: -config.file=/etc/loki/local-config.yaml
+    deploy:
+      mode: replicated
+      replicas: 1
+    ports:
+      - "3100:3100"
+
+  promtail:
+    image: grafana/promtail:latest
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /tmp:/tmp
+    networks:
+      - monitoring
+    configs:
+      - source: promtail-config
+        target: /etc/promtail/promtail-config.yml
+    command: -config.file=/etc/promtail/promtail-config.yml
+    deploy:
+      mode: global
+
+  grafana:
+    image: grafana/grafana:latest
+    volumes:
+      - grafana-data:/var/lib/grafana
+    networks:
+      - monitoring
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    deploy:
+      mode: replicated
+      replicas: 1
+    ports:
+      - "3000:3000"
