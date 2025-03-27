@@ -1,0 +1,65 @@
+services:
+  mongo1:
+    image: percona/percona-server-mongodb:7.0    
+    command: "--replSet rs --bind_ip_all"
+    ports:
+      - 27017:27017
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /opt/dedalus/docker/mongo/data:/data/db
+    networks:
+      - mongo
+    deploy:
+      replicas: 1
+      placement:
+        constraints:
+          - node.labels.swarm.node == 1
+      restart_policy:
+        condition: any
+        delay: 5s
+        max_attempts: 3
+        window: 120s
+  mongo2:
+    image: percona/percona-server-mongodb:7.0
+    command: "--replSet rs --bind_ip_all"
+    ports:
+      - 27018:27017
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /opt/dedalus/docker/mongo/data:/data/db
+    networks:
+      - mongo
+    deploy:
+      replicas: 1
+      placement:
+        constraints:
+          - node.labels.swarm.node == 2
+      restart_policy:
+        condition: any
+        delay: 5s
+        max_attempts: 3
+        window: 120s
+  mongo3:
+    image: percona/percona-server-mongodb:7.0
+    command: "--replSet rs --bind_ip_all"
+    ports:
+      - 27019:27017
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /opt/dedalus/docker/mongo/data:/data/db
+    networks:
+      - mongo
+    deploy:
+      replicas: 1
+      placement:
+        constraints:
+          - node.labels.swarm.node == 3
+      restart_policy:
+        condition: any
+        delay: 5s
+        max_attempts: 3
+        window: 120s
+
+networks:
+  mongo:
+    external: true
