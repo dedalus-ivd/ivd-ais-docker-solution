@@ -1,0 +1,37 @@
+auth_enabled: false
+
+server:
+  http_listen_port: 3100
+
+common:
+  path_prefix: /loki  # Base path for all storage
+  replication_factor: 1
+  ring:
+    kvstore:
+      store: inmemory
+
+schema_config:
+  configs:
+    - from: 2025-03-21
+      store: tsdb
+      object_store: filesystem
+      schema: v13
+      index:
+        prefix: index_
+        period: 24h
+
+storage_config:
+  filesystem:
+    directory: /loki/chunks  # Single directory for chunks and delete requests
+  tsdb_shipper:
+    active_index_directory: /loki/tsdb-index
+    cache_location: /loki/tsdb-cache
+
+compactor:
+  working_directory: /loki/compactor  # Required for compaction
+  retention_enabled: true             # Enable retention
+  compaction_interval: 10m            # How often to compact
+  delete_request_store: filesystem    # Explicitly set to filesystem store
+
+limits_config:
+  retention_period: 48h  # Basic retention period
