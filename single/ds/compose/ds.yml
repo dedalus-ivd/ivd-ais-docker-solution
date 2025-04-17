@@ -1,0 +1,27 @@
+services:
+  discovery-service:
+    image: 350801433917.dkr.ecr.eu-west-1.amazonaws.com/products/iop/xvalue/ds:5.1.2
+    container_name: discovery-service
+    env_file: ./.env
+    networks:
+      - ais_net
+    ports:
+      - "${DS_PORT}:8080"
+    environment:
+        JAVA_OPTS: -XX:+ExitOnOutOfMemoryError -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=/opt/dumps
+    logging:
+        driver: "json-file"  # Set the logging driver
+        options:
+            max-size: "10m"      # Maximum size in megabytes of log file before rotation
+            max-file: "3"        # Maximum number of log files to keep
+    deploy:
+        resources:
+            limits:
+                cpus: '0.6'
+                memory: '1500M'
+    volumes:
+        - /opt/dedalus/docker/ds/conf/:/tomcat/x1v1/conf/
+networks:
+  ais_net:
+    name: ${AIS_CORE_NETWORK}
+    external: true

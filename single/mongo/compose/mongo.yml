@@ -1,0 +1,19 @@
+services:
+  mongo:
+    image: percona/percona-server-mongodb:7.0    
+    command: "--bind_ip_all"
+    restart: on-failure
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=${MONGO_INITDB_ROOT_USERNAME}
+      - MONGO_INITDB_ROOT_PASSWORD=%{MONGO_INITDB_ROOT_PASSWORD}
+    ports:
+      - ${MONGO_PORT}:27017
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /opt/dedalus/docker/${AIS_WORKSPACE}/mongo/data:/data/db
+    networks:
+      - mongo
+networks:
+  global_ais:
+    name: ${SHARED_AIS_NETWORK}
+    external: true
