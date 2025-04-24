@@ -2,17 +2,24 @@ services:
   mongo:
     image: percona/percona-server-mongodb:7.0    
     command: "--bind_ip_all"
-    restart: on-failure
+    restart: always
     environment:
       - MONGO_INITDB_ROOT_USERNAME=${MONGO_INITDB_ROOT_USERNAME}
-      - MONGO_INITDB_ROOT_PASSWORD=%{MONGO_INITDB_ROOT_PASSWORD}
+      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_INITDB_ROOT_PASSWORD}
     ports:
       - ${MONGO_PORT}:27017
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - /opt/dedalus/docker/${AIS_WORKSPACE}/mongo/data:/data/db
     networks:
-      - mongo
+      global_ais:
+        ipv4_address: ${MONGO_IP}
+    user: ${DEDALUS_DOCKER_USER}
+    logging:
+        driver: "json-file"  # Set the logging driver
+        options:
+            max-size: "10m"      # Maximum size in megabytes of log file before rotation
+            max-file: "3"        # Maximum number of log files to keep
 networks:
   global_ais:
     name: ${SHARED_AIS_NETWORK}
