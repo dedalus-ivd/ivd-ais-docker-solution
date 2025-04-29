@@ -57,30 +57,65 @@ Each service needs to produce a release compose of these folders
 - scripts: utility scripts if any
 - secrets: to keep the secrets
 
+
 ## Configuration upload
+
+For all the following examples I will assume
+- The node user that can connect to the node is: <b>ec2-user</b>
+- The docker user that can operate on docker is : <b>dedalus_docker</b>
+- The workspace we are using is : <b>dev</b>
+
+1. Prepare your deployment on the workstation you are using: that means that you have to put the files under a folder that has one of the workspace names : dev, prod, test, valid.
+It has to look like the folder structure you see [here](https://confluence.dedalus.com/display/IAT/Docker+deployment+-+component+requirements#Dockerdeploymentcomponentrequirements-Deploymentstructure)
+
+2. Download the configuration for each service7product you are going to deploy and put it into that folder
+3. Copy the compose file under each "compose folder" of the products into the workspace root folder
+4. Change the variables into the env files folowing the service instruction 
+
+5. Upload your folder into the node. It should land in the node user's home, in this case: /home/ec2-user/
+So you will end up having the configuration under the folder /home/ec2-user/dev (or prod/test/valid)
+
+6. Log into the node using an ssh like tool (like PuTTy or directly using the shell)
+
+7. Switch to the docker user (you will be asked for a password if any)
+```bash
+su dedalus_docker
+```
+
+8. Copy the configuration <br>
+<b>dev</b>
+
 ```bash
 cp -r /home/ec2-user/dev/ /opt/dedalus/docker/
 ```
+<b>prod</b>
+
+```bash
+cp -r /home/ec2-user/prod/ /opt/dedalus/docker/
+```
+
+## Network creation
+As first you need to create a subnetwork
+1. Upload the configuration
+2. Connect to the node and become the docker user
+3. Go to in the workspace folder
+```bash
+docker compose -f ./network.yml --env-file ./env/shared.env --all-resources create
+```
 
 ## Mongo deployment
-
+1. Download the mongo configuration and put under the workspace folder
+2. Upload the configuration into the node user home
+3. Log into the node and become the docker user
 ```bash
 cd /opt/dedalus/docker/dev/
 ```
 
-```bash
-mv mongo/compose/mongo.yml ./
-```
-```bash
-mv /opt/dedalus/docker/dev/mongo/compose/mongo.yml /opt/dedalus/docker/dev/
-```
 
 ```bash
  docker compose -f mongo.yml --env-file env/shared.env --env-file env/routes.env --env-file mongo/env/mongo.env create
 ```
-```bash
-docker compose -f /opt/dedalus/docker/dev/mongo.yml --env-file /opt/dedalus/docker/dev/env/shared.env --env-file /opt/dedalus/docker/dev/mongo/env/mongo.env start
-```
+
 
 
 ## DS deployment
@@ -125,4 +160,9 @@ db.createUser(
 
 ```bash
  docker compose -f ds.yml --env-file env/shared.env --env-file env/routes.env create
+```
+
+## HA proxy deployment
+```bash
+openssl req -x509 -nodes -days 730 -newkey rsa:2048 -keyout  haproxy_cert.pem.key -out haproxy_cert.pem -config cert.cnf
 ```

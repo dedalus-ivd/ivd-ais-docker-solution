@@ -1,0 +1,38 @@
+services:
+  haproxy:
+    image: haproxy:2.7
+    restart: always
+    environment:
+      - DS_IP=${DS_IP}
+      - DS_INTERNAL_PORT=${DS_INTERNAL_PORT}
+      - DS_PORT=${DS_PORT}
+      - DEDALUS_DOCKER_USER=${DEDALUS_DOCKER_USER}
+      - HAPROXY_STATS_PORT=${HAPROXY_STATS_PORT}
+      - HAPROXY_PORT=${HAPROXY_PORT}
+    ports:
+      - ${DS_PORT}:${DS_PORT}
+      - ${HAPROXY_SSL_PORT}:${HAPROXY_SSL_PORT}
+      - ${HAPROXY_STATS_PORT}:${HAPROXY_STATS_PORT}
+    volumes:
+      - /opt/dedalus/docker/${AIS_WORKSPACE}/haproxy/conf:/usr/local/etc/haproxy:ro 
+    networks:
+      global_ais:
+        ipv4_address: ${HAPROXY_IP}
+    sysctls:
+      net.ipv4.ip_unprivileged_port_start: 0
+    user: ${DEDALUS_DOCKER_USER}
+    deploy:
+        resources:
+            limits:
+                cpus: '0.6'
+                memory: '1500M'
+    logging:
+        driver: "json-file"  # Set the logging driver
+        options:
+            max-size: "10m"      # Maximum size in megabytes of log file before rotation
+            max-file: "3"        # Maximum number of log files to keep
+
+networks:
+  global_ais:
+    name: ${SHARED_AIS_NETWORK}
+    external: true
