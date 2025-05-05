@@ -86,12 +86,12 @@ su dedalus_docker
 <b>dev</b>
 
 ```bash
-cp -r /home/ec2-user/dev/ /opt/dedalus/docker/
+cp -r /opt/dedalus/upload/dev/ /opt/dedalus/docker/
 ```
 <b>prod</b>
 
 ```bash
-cp -r /home/ec2-user/prod/ /opt/dedalus/docker/
+cp -r /opt/dedalus/upload/prod/ /opt/dedalus/docker/
 ```
 
 ## Network creation
