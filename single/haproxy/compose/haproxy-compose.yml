@@ -16,7 +16,7 @@ services:
       - ${DS_PORT}:${DS_PORT}
       - ${HAPROXY_SSL_PORT}:${HAPROXY_SSL_PORT}
       - ${HAPROXY_STATS_PORT}:${HAPROXY_STATS_PORT}
-      - ${IVAIS_LM_IP}:${IVAIS_LM_IP}
+      - ${IVAIS_LM_PORT}:${IVAIS_LM_PORT}
     volumes:
       - /opt/dedalus/docker/${AIS_WORKSPACE}/haproxy/conf:/usr/local/etc/haproxy:ro 
     networks:

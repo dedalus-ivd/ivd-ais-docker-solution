@@ -41,6 +41,10 @@ It can be dev, test, prod
 sudo chown -R dedalus_docker:dedalus_docker /opt/dedalus/docker
 ```
 
+```bash
+sudo chown -R :dedalus /opt/dedalus/upload
+```
+
 5. Assign the dedalus docker user to the group(s) of the node users
 
 ```bash
