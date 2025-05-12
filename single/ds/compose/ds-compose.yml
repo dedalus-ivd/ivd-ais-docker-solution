@@ -4,8 +4,6 @@ services:
     networks:
       global_ais:
         ipv4_address: ${DS_IP}
-    ports:
-      - "${DS_PORT}:8080"
     environment:
         JAVA_OPTS: -XX:+ExitOnOutOfMemoryError -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=/opt/dumps
     env_file: 

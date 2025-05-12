@@ -1,6 +1,6 @@
 services:
   haproxy:
-    image: haproxy:2.7
+    image: haproxy:2.8.15
     restart: always
     environment:
       - DS_IP=${DS_IP}
@@ -12,11 +12,19 @@ services:
       - IVAIS_LM_IP=${IVAIS_LM_IP}
       - IVAIS_LM_PORT=${IVAIS_LM_PORT}
       - IVAIS_LM_INTERNAL_PORT=${IVAIS_LM_INTERNAL_PORT}
+      - R4C_GATEWAY_IP=${R4C_GATEWAY_IP}
+      - R4C_GATEWAY_PORT=${R4C_GATEWAY_PORT}
+      - R4C_GATEWAY_INTERNAL_PORT=${R4C_GATEWAY_INTERNAL_PORT}
+      - R4C_APPS_IP=${R4C_APPS_IP}
+      - R4C_APPS_PORT=${R4C_APPS_PORT}
+      - R4C_APPS_INTERNAL_PORT=${R4C_APPS_INTERNAL_PORT}
     ports:
       - ${DS_PORT}:${DS_PORT}
       - ${HAPROXY_SSL_PORT}:${HAPROXY_SSL_PORT}
       - ${HAPROXY_STATS_PORT}:${HAPROXY_STATS_PORT}
       - ${IVAIS_LM_PORT}:${IVAIS_LM_PORT}
+      - ${R4C_APPS_PORT}:${R4C_APPS_PORT}
+      - ${R4C_GATEWAY_PORT}:${R4C_GATEWAY_PORT}
     volumes:
       - /opt/dedalus/docker/${AIS_WORKSPACE}/haproxy/conf:/usr/local/etc/haproxy:ro 
     networks:
