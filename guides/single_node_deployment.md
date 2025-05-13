@@ -9,6 +9,31 @@
 - A software to transfer files: the console con be good or [WinSCP](https://winscp.net/eng/download.php)
 - the ssh key that usually is needed to connect to the node (otherwise can be only username and password, depends on the environment)
 
+## AWS Credentials registration and use
+Before pulling the Dedalus images from the repositories it's necessary to register the credentials
+
+The credentials can be found [here](https://confluence.dedalus.com/display/IAT/IVD+Services+-+deployment+info)
+
+- Log into the node and become dedalus_docker
+- type 
+```bash
+aws configure
+```
+- The interface will ask for
+1. AWS Access Key ID = 
+2. AWS Secret Access Key =
+3. Default region name = eu-west-1
+4. Default output format = json
+
+- Check if correctly set by typing
+```bash
+aws sts get-caller-identity
+```
+- Before pulling a new image, or using the compose files type, we need to log ing into AWS
+```bash
+aws ecr get-login-password --region eu-west-1 | docker login --username AWS --password-stdin 350801433917.dkr.ecr.eu-west-1.amazonaws.com
+```
+
 ## Deployment structure
 
 ### dedalus folder
@@ -116,30 +141,7 @@ cd /opt/dedalus/docker/dev/
  docker compose -f mongo-compose.yml --env-file env/shared.env --env-file env/routes.env --env-file mongo/env/mongo.env create
 ```
 
-## AWS Credentials registration and use
-Before pulling the Dedalus images from the repositories it's necessary to register the credentials
 
-The credentials can be found [here](https://confluence.dedalus.com/display/IAT/IVD+Services+-+deployment+info)
-
-- Log into the node and become dedalus_docker
-- type 
-```bash
-aws configure
-```
-- The interface will ask for
-1. AWS Access Key ID = 
-2. AWS Secret Access Key =
-3. Default region name = eu-west-1
-4. Default output format = json
-
-- Check if correctly set by typing
-```bash
-aws sts get-caller-identity
-```
-- Before pulling a new image, or using the compose files type, we need to log ing into AWS
-```bash
-aws ecr get-login-password --region eu-west-1 | docker login --username AWS --password-stdin 350801433917.dkr.ecr.eu-west-1.amazonaws.com
-```
 
 
 ## DS deployment
