@@ -1,8 +1,6 @@
-version: '3.8'
-
 services:
   grafana:
-    image: grafana/grafana:latest
+    image: grafana/grafana:11.2.0
     deploy:
       mode: replicated
       replicas: 1
@@ -11,10 +9,12 @@ services:
     ports:
       - "${MONITORING_GRAFANA}:3000"
     volumes:
-      - ./grafana.ini:/etc/grafana/grafana.ini
-      - grafana-data:/var/lib/grafana
+      # - ./grafana.ini:/etc/grafana/grafana.ini
+      - ../conf/grafana/grafana-config.ini:/etc/grafana/grafana.ini
+      - /opt/dedalus/docker/${AIS_WORKSPACE}/grafana/data:/var/lib/grafana
+      # - grafana-data:/var/lib/grafana
     networks:
-      - monitoring
+      - global_ais
     environment:
       - GF_AUTH_ANONYMOUS_ENABLED=true
       - GF_AUTH_ANONYMOUS_ORG_ROLE=Admin
@@ -23,25 +23,28 @@ services:
       - prometheus
 
   loki:
-    image: grafana/loki:latest
+    image: grafana/loki:3.2.0
     deploy:
       mode: replicated
       replicas: 1
       placement:
         constraints: [node.role == manager]
     volumes:
-      - ./loki-config.yaml:/etc/loki/loki-config.yaml
-      - loki-data:/loki
+      - ../conf/loki/loki-config.yaml:/etc/loki/loki-config.yaml
+      # - ./loki-config.yaml:/etc/loki/loki-config.yaml
+      - /opt/dedalus/docker/${AIS_WORKSPACE}/loki/data:/loki
+      # - loki-data:/loki
     networks:
       - global_ais
     command: -config.file=/etc/loki/loki-config.yaml
 
   promtail:
-    image: grafana/promtail:latest
+    image: grafana/promtail:3.2.0
     deploy:
       mode: global  # Run on every node to collect logs
     volumes:
-      - ./promtail-config.yaml:/etc/promtail/promtail-config.yaml
+      - ../conf/promtail/promtail-config.yaml:/etc/promtail/promtail-config.yaml
+      # - ./promtail-config.yaml:/etc/promtail/promtail-config.yaml
       - /var/lib/docker/containers:/var/lib/docker/containers:ro
       - /var/run/docker.sock:/var/run/docker.sock
     networks:
@@ -49,15 +52,17 @@ services:
     command: -config.file=/etc/promtail/promtail-config.yaml
 
   prometheus:
-    image: prom/prometheus:latest
+    image: prom/prometheus:v2.54.1
     deploy:
       mode: replicated
       replicas: 1
       placement:
         constraints: [node.role == manager]
     volumes:
-      - ./prometheus.yml:/etc/prometheus/prometheus.yml
-      - prometheus-data:/prometheus
+      - ../conf/prometheus/prometheus-config.yaml:/etc/prometheus/prometheus.yml
+      # - ./prometheus.yml:/etc/prometheus/prometheus.yml
+      - /opt/dedalus/docker/${AIS_WORKSPACE}/prometheus/data:/prometheus
+      # - prometheus-data:/prometheus
     networks:
       - global_ais
     command:
@@ -65,7 +70,7 @@ services:
       - '--storage.tsdb.path=/prometheus'
 
   cadvisor:
-    image: gcr.io/cadvisor/cadvisor:latest
+    image: gcr.io/cadvisor/cadvisor:v0.50.0
     deploy:
       mode: global  # Run on every node to collect metrics
     volumes:
@@ -83,7 +88,7 @@ networks:
     name: ${SHARED_AIS_NETWORK}
     external: true
 
-volumes:
-  grafana-data:
-  loki-data:
-  prometheus-data:
+# volumes:
+#   grafana-data:
+#   loki-data:
+#   prometheus-data:
