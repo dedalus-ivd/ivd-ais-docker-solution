@@ -3,9 +3,9 @@
 ## Prerequisites
 
 - A node with [these](https://confluence.dedalus.com/display/IAT/Docker+deployment+-+component+requirements) prerequisites
-- A user with the authorization of running docker
+- A user with the authorization of running docker: we will call it dedalus_docker
 - A user to log into the node
-- A software to conect to a Linux console (the console itself can be good, under windows you can use [PuTTy client](https://www.putty.org/))
+- A software to connect to a Linux console (the console itself can be good, under windows you can use [PuTTy client](https://www.putty.org/))
 - A software to transfer files: the console con be good or [WinSCP](https://winscp.net/eng/download.php)
 - the ssh key that usually is needed to connect to the node (otherwise can be only username and password, depends on the environment)
 
@@ -14,7 +14,7 @@ Before pulling the Dedalus images from the repositories it's necessary to regist
 
 The credentials can be found [here](https://confluence.dedalus.com/display/IAT/IVD+Services+-+deployment+info)
 
-- Log into the node and become dedalus_docker
+- Log into the node and switch user to dedalus_docker 
 - type 
 ```bash
 aws configure
@@ -29,7 +29,8 @@ aws configure
 ```bash
 aws sts get-caller-identity
 ```
-- Before pulling a new image, or using the compose files type, we need to log ing into AWS
+
+- ### Before pulling a new image, or using the compose files type, we need to log ing into AWS
 ```bash
 aws ecr get-login-password --region eu-west-1 | docker login --username AWS --password-stdin 350801433917.dkr.ecr.eu-west-1.amazonaws.com
 ```
@@ -65,8 +66,8 @@ Under the root folder will be placed the compose files.
 Each product will release its own and they will be copied here
 
 example:<br>
-/opt/dedalus/docker/prod/ds.yml<br>
-/opt/dedalus/docker/prod/mongo.yml
+/opt/dedalus/docker/prod/ds-compose.yml<br>
+/opt/dedalus/docker/prod/mongo-compose.yml
 
 <b>env</b> folder
 under the "env" folder there will be the common used variables in the files
@@ -82,6 +83,17 @@ Each service needs to produce a release compose of these folders
 - scripts: utility scripts if any
 - secrets: to keep the secrets
 
+## Workspace folder setup
+
+- Log into the node with your credentials and create the workspace folders
+```bash
+mkdir /opt/dedalus/upload/<workspace>
+```
+- switch to dedalus_docker user and create the same workspace into the docker space
+```bash
+mkdir  /opt/dedalus/docker/<workspace>
+```
+
 
 ## Configuration upload
 
@@ -93,21 +105,29 @@ For all the following examples I will assume
 1. Prepare your deployment on the workstation you are using: that means that you have to put the files under a folder that has one of the workspace names : dev, prod, test, valid.
 It has to look like the folder structure you see [here](https://confluence.dedalus.com/display/IAT/Docker+deployment+-+component+requirements#Dockerdeploymentcomponentrequirements-Deploymentstructure)
 
-2. Download the configuration for each service7product you are going to deploy and put it into that folder
-3. Copy the compose file under each "compose folder" of the products into the workspace root folder
-4. Change the variables into the env files folowing the service instruction 
+2. Download the docker_single_node.zip that will contain the network, mongo, haproxy, monitoring and the env folder. Unzip it into your pc under the workspace folder you prepared for the deployment
 
-5. Upload your folder into the node. It should land in the node user's home, in this case: /home/ec2-user/
-So you will end up having the configuration under the folder /home/ec2-user/dev (or prod/test/valid)
+3. Download release zip file for each service product you are going to deploy and put it into the workspace folder (r4c, ds, ld....)\
 
-6. Log into the node using an ssh like tool (like PuTTy or directly using the shell)
+4. Copy the compose files in the "compose" folder of each product into the workspace folder
 
-7. Switch to the docker user (you will be asked for a password if any)
+5. Configure env/shared.env file variables:
+- Set the AIS_WORKSPACE using the correct one (file /env/shared.env)
+- Set the SOLUTION_BASE_URL using the solution one (file /env.routesd.env): this should be the base url in front of the solution, not the node one (even thought they can be the same) but if, for example, there is a load balancer in front of two nodes, you need to use the address of the load balancer
+
+6. configure each product: in this guide we will cover the mongo, the haproxy and we take the discovery service as example so configure them before uploading the files
+
+7. Upload your folder into the node. It should land in the upload folder /opt/dedalus/upload, in this case:
+So you will end up having the configuration under the folder /opt/dedalus/upload/dev (or prod/test/valid)
+
+8. Log into the node using an ssh like tool (like PuTTy or directly using the shell)
+
+9. Switch to the docker user (you will be asked for a password if any)
 ```bash
 su dedalus_docker
 ```
 
-8. Copy the configuration <br>
+10. Copy the configuration <br>
 <b>dev</b>
 
 ```bash
@@ -119,6 +139,12 @@ cp -r /opt/dedalus/upload/dev/ /opt/dedalus/docker/
 cp -r /opt/dedalus/upload/prod/ /opt/dedalus/docker/
 ```
 
+11. Go the workspace folder (prod in the example)
+
+```bash
+cd  /opt/dedalus/docker/prod
+```
+
 ## Network creation
 As first you need to create a subnetwork
 1. Upload the configuration
@@ -126,6 +152,49 @@ As first you need to create a subnetwork
 3. Go to in the workspace folder
 ```bash
 docker compose -f ./network-compose.yml --env-file ./env/shared.env --all-resources create
+```
+4. Check the correct creation
+
+```bash
+docker network ls
+```
+
+
+## HA proxy deployment
+
+Before deploy the proxy you will need to decide what certificate are you going to use to secure the communications.
+
+### Existing certificate.
+If you already have the certificate, please rename the certificate as "haproxy_cert.pem" and the key as "haproxy.pem.key" and place them into the "haproxy/conf" folder before uploading the configuration
+
+### Self signed certificate
+There is already a cnf file to produce a self signed certificate in the folder /haproxy/conf
+The file is called cert.cnf
+You need to put the name of the node by decomment the line "DNS.1" or directly the IP address by decomment the line with IP.1
+The certificate can be produced directly on the node.
+
+- go to the haproxy/conf folder
+```bash
+cd  /opt/dedalus/docker/<workspace>/haproxy/conf
+```
+
+- produce the certificate
+```bash
+openssl req -x509 -nodes -days 730 -newkey rsa:2048 -keyout  haproxy_cert.pem.key -out haproxy_cert.pem -config cert.cnf
+```
+
+- go back to the workspace folder
+```bash
+cd  /opt/dedalus/docker/<workspace>
+```
+- create the service
+```bash
+docker compose -f haproxy-compose.yml --env-file env/shared.env --env-file env/routes.env  --env-file haproxy/env/haproxy.env create
+```
+
+- run the service
+```bash
+docker compose -f haproxy-compose.yml --env-file env/shared.env --env-file env/routes.env  --env-file haproxy/env/haproxy.env start
 ```
 
 ## Mongo deployment
@@ -136,15 +205,28 @@ docker compose -f ./network-compose.yml --env-file ./env/shared.env --all-resour
 cd /opt/dedalus/docker/dev/
 ```
 
-
 ```bash
  docker compose -f mongo-compose.yml --env-file env/shared.env --env-file env/routes.env --env-file mongo/env/mongo.env create
 ```
 
+```bash
+ docker compose -f mongo-compose.yml --env-file env/shared.env --env-file env/routes.env --env-file mongo/env/mongo.env start
+```
 
 
+
+# Single application deployment
+
+To show the steps to follow for every single product deployment we will use the Discovery Service as example.
+For each product you need to check its own docker deployment manual
 
 ## DS deployment
+
+### Deployment zip file download
+
+- configuration.json with the identity provider
+- application.properties according to the ds settings
+- iana.tld.additional= add the dns you want to ad
 
 ### mongo collection creation
 
@@ -186,10 +268,3 @@ db.createUser(
  docker compose -f ds-compose.yml --env-file env/shared.env --env-file env/routes.env create
 ```
 
-## HA proxy deployment
-```bash
-openssl req -x509 -nodes -days 730 -newkey rsa:2048 -keyout  haproxy_cert.pem.key -out haproxy_cert.pem -config cert.cnf
-```
-```bash
-docker compose -f haproxy-compose.yml --env-file env/shared.env --env-file env/routes.env  --env-file haproxy/env/haproxy.env create
-```

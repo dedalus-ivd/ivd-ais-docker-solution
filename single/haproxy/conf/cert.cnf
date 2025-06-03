@@ -15,4 +15,5 @@ subjectAltName = @alt_names
 [v3_req]
 subjectAltName = @alt_names
 [alt_names]
-IP.1 = 10.6.0.106
+#IP.1 = 10.6.0.106
+#DNS.1 = something.awsnet.ivdarch.cloud

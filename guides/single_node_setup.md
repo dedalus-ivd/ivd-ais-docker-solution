@@ -4,6 +4,9 @@ Prerequisites
 - Docker engine and docker compose installed
 - A user that can be sudoer
 
+It's possible simply to launch the script /scripts/single_node_setup.sh or simply copy the commands in the console and apply.
+After it you need to do only the steps  2  and 9
+
 0. Create folders for deployment
 
 This folder will hold everything docker related, data
@@ -62,13 +65,13 @@ sudo chown -R :dedalus /opt/dedalus/upload
 ```bash
  sudo chmod 770 /opt/dedalus/upload/
 ```
-5. Assign the dedalus_docker user to dedalus group
+8. Assign the dedalus_docker user to dedalus group
 
 ```bash
 sudo usermod -a -G dedalus dedalus_docker 
 ```
 
-5. Assign every user to the group dedalus to allow him to upload the conf: this should be done for every user that will upload the configuration
+9. Assign every user to the group dedalus to allow him to upload the conf: this should be done for every user that will upload the configuration
 
 ```bash
 sudo usermod -a -G dedalus <user> 

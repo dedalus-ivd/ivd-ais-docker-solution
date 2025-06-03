@@ -1,17 +1,10 @@
 services:
   grafana:
     image: grafana/grafana:11.2.0
-    deploy:
-      mode: replicated
-      replicas: 1
-      placement:
-        constraints: [node.role == manager]
-    ports:
-      - "${MONITORING_GRAFANA}:3000"
     volumes:
       # - ./grafana.ini:/etc/grafana/grafana.ini
-      - ../conf/grafana/grafana-config.ini:/etc/grafana/grafana.ini
-      - /opt/dedalus/docker/${AIS_WORKSPACE}/grafana/data:/var/lib/grafana
+      - /opt/dedalus/docker/${AIS_WORKSPACE}/monitoring/conf/grafana/grafana-config.ini:/etc/grafana/grafana.ini
+      - /opt/dedalus/docker/${AIS_WORKSPACE}/monitoring/data/grafana:/var/lib/grafana
       # - grafana-data:/var/lib/grafana
     networks:
       - global_ais
@@ -21,18 +14,12 @@ services:
     depends_on:
       - loki
       - prometheus
-
   loki:
     image: grafana/loki:3.2.0
-    deploy:
-      mode: replicated
-      replicas: 1
-      placement:
-        constraints: [node.role == manager]
     volumes:
-      - ../conf/loki/loki-config.yaml:/etc/loki/loki-config.yaml
+      - /opt/dedalus/docker/${AIS_WORKSPACE}/monitoring/conf/loki/loki-config.yaml:/etc/loki/loki-config.yaml
       # - ./loki-config.yaml:/etc/loki/loki-config.yaml
-      - /opt/dedalus/docker/${AIS_WORKSPACE}/loki/data:/loki
+      - /opt/dedalus/docker/${AIS_WORKSPACE}/monitoring/data/loki:/loki
       # - loki-data:/loki
     networks:
       - global_ais
@@ -40,10 +27,8 @@ services:
 
   promtail:
     image: grafana/promtail:3.2.0
-    deploy:
-      mode: global  # Run on every node to collect logs
     volumes:
-      - ../conf/promtail/promtail-config.yaml:/etc/promtail/promtail-config.yaml
+      - /opt/dedalus/docker/${AIS_WORKSPACE}/monitoring/conf/promtail/promtail-config.yaml:/etc/promtail/promtail-config.yaml
       # - ./promtail-config.yaml:/etc/promtail/promtail-config.yaml
       - /var/lib/docker/containers:/var/lib/docker/containers:ro
       - /var/run/docker.sock:/var/run/docker.sock
@@ -53,15 +38,10 @@ services:
 
   prometheus:
     image: prom/prometheus:v2.54.1
-    deploy:
-      mode: replicated
-      replicas: 1
-      placement:
-        constraints: [node.role == manager]
     volumes:
-      - ../conf/prometheus/prometheus-config.yaml:/etc/prometheus/prometheus.yml
+      - /opt/dedalus/docker/${AIS_WORKSPACE}/monitoring/conf/prometheus/prometheus-config.yml:/etc/prometheus/prometheus.yml
       # - ./prometheus.yml:/etc/prometheus/prometheus.yml
-      - /opt/dedalus/docker/${AIS_WORKSPACE}/prometheus/data:/prometheus
+      - /opt/dedalus/docker/${AIS_WORKSPACE}/monitoring/data/prometheus:/prometheus
       # - prometheus-data:/prometheus
     networks:
       - global_ais
@@ -71,8 +51,6 @@ services:
 
   cadvisor:
     image: gcr.io/cadvisor/cadvisor:v0.50.0
-    deploy:
-      mode: global  # Run on every node to collect metrics
     volumes:
       - /:/rootfs:ro
       - /var/run:/var/run:ro
