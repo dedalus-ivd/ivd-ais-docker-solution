@@ -173,6 +173,11 @@ The file is called cert.cnf
 You need to put the name of the node by decomment the line "DNS.1" or directly the IP address by decomment the line with IP.1
 The certificate can be produced directly on the node.
 
+### Configuration statistics
+- It is possibile to change the statitic port , user and psw -> env/haproxy.env
+- to change the statistics deployment, you need to change the conf/haproxy.cfg
+- Default URL is http://your.solution.env:27101/stats
+
 - go to the haproxy/conf folder
 ```bash
 cd  /opt/dedalus/docker/<workspace>/haproxy/conf
@@ -197,7 +202,36 @@ docker compose -f haproxy-compose.yml --env-file env/shared.env --env-file env/r
 docker compose -f haproxy-compose.yml --env-file env/shared.env --env-file env/routes.env  --env-file haproxy/env/haproxy.env start
 ```
 
+## Monitoring deployment
+
+
+1. Log into the node
+2. Switch to the dedalus_docker user
+3. Go to the workspace folder
+4. Run 
+
+```bash
+docker compose -f monitoring-compose.yml --env-file env/shared.env --env-file env/routes.env  --env-file monitoring/env/monitoring.env create
+```
+
+```bash
+docker compose -f monitoring-compose.yml --env-file env/shared.env --env-file env/routes.env  --env-file monitoring/env/monitoring.env start
+```
+
+### Monitoring configurationg
+By default the monitoring interface is under the port 27100
+
+1. Log into the page https://your.soulution.env:27100
+2. Sign in with the creation username and password (admin / admin)
+3. The interface will ask to change the password
+4. Follow the guide [here](https://confluence.dedalus.com/display/IAT/Enterprise+Log+Monitoring+Solution+with+Loki%2C+Promtail%2C+and+Grafana+on+Docker+Swarm) at Step 3: configure Grafana.
+
 ## Mongo deployment
+
+### Configurationg mongo
+- To change the default mongo port -> env/mongo.env
+- To change the default admin user and psw -> env/mongo.env
+
 1. Download the mongo configuration and put under the workspace folder
 2. Upload the configuration into the node user home
 3. Log into the node and become the docker user

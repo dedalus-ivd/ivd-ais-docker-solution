@@ -1,6 +1,7 @@
 services:
   grafana:
     image: grafana/grafana:11.2.0
+    restart: always
     volumes:
       # - ./grafana.ini:/etc/grafana/grafana.ini
       - /opt/dedalus/docker/${AIS_WORKSPACE}/monitoring/conf/grafana/grafana-config.ini:/etc/grafana/grafana.ini
@@ -14,8 +15,10 @@ services:
     depends_on:
       - loki
       - prometheus
+    user: ${DEDALUS_DOCKER_USER}
   loki:
     image: grafana/loki:3.2.0
+    restart: always
     volumes:
       - /opt/dedalus/docker/${AIS_WORKSPACE}/monitoring/conf/loki/loki-config.yaml:/etc/loki/loki-config.yaml
       # - ./loki-config.yaml:/etc/loki/loki-config.yaml
@@ -24,9 +27,11 @@ services:
     networks:
       - global_ais
     command: -config.file=/etc/loki/loki-config.yaml
+    user: ${DEDALUS_DOCKER_USER}
 
   promtail:
     image: grafana/promtail:3.2.0
+    restart: always
     volumes:
       - /opt/dedalus/docker/${AIS_WORKSPACE}/monitoring/conf/promtail/promtail-config.yaml:/etc/promtail/promtail-config.yaml
       # - ./promtail-config.yaml:/etc/promtail/promtail-config.yaml
@@ -35,9 +40,11 @@ services:
     networks:
       - global_ais
     command: -config.file=/etc/promtail/promtail-config.yaml
+    
 
   prometheus:
     image: prom/prometheus:v2.54.1
+    restart: always
     volumes:
       - /opt/dedalus/docker/${AIS_WORKSPACE}/monitoring/conf/prometheus/prometheus-config.yml:/etc/prometheus/prometheus.yml
       # - ./prometheus.yml:/etc/prometheus/prometheus.yml
@@ -48,9 +55,11 @@ services:
     command:
       - '--config.file=/etc/prometheus/prometheus.yml'
       - '--storage.tsdb.path=/prometheus'
+    user: ${DEDALUS_DOCKER_USER}
 
   cadvisor:
     image: gcr.io/cadvisor/cadvisor:v0.50.0
+    restart: always
     volumes:
       - /:/rootfs:ro
       - /var/run:/var/run:ro
