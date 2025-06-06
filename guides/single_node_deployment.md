@@ -251,13 +251,14 @@ cd /opt/dedalus/docker/dev/
 1. Prepare SSL Certificate Files
 
 Assume working directory: /opt/dedalus/docker/<workspace>/mongo/
+```text
 mongo/
 ├── conf/
 │   └── mongod.conf
 ├── ssl/
 │   ├── mongodb.pem      # Server certificate + private key
 │   └── ca.pem           # CA certificate
-
+```
 In /opt/dedalus/docker/<workspace>/mongo/ssl create:
 - mongodb.pem → Combined cert + private key
 - ca.pem → CA certificate that signed the server cert
