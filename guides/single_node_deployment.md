@@ -247,7 +247,32 @@ cd /opt/dedalus/docker/dev/
  docker compose -f mongo-compose.yml --env-file env/shared.env --env-file env/routes.env --env-file mongo/env/mongo.env start
 ```
 
+### MongoDB SSL Setup
+1. Prepare SSL Certificate Files
 
+Assume working directory: /opt/dedalus/docker/<WORKSPACE>/mongo/
+
+mongo/
+├── conf/
+│   └── mongod.conf
+├── ssl/
+│   ├── mongodb.pem      # Server certificate + private key
+│   └── ca.pem           # CA certificate
+
+In /opt/dedalus/docker/<WORKSPACE>/mongo/ssl create:
+
+mongodb.pem → Combined cert + private key
+ca.pem → CA certificate that signed the server cert
+
+Make sure:
+  -- Both mongodb.pem and ca.pem should have permission 600
+  -- Files are owned by the container runtime user (e.g. dedalus_docker)
+
+Example:
+chmod 600 mongodb.pem ca.pem
+
+2. MongoDB Config File
+Path: /opt/dedalus/docker/<WORKSPACE>/mongo/conf/mongod.conf
 
 # Single application deployment
 
