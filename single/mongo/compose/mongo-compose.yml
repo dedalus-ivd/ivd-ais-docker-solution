@@ -1,12 +1,7 @@
 services:
   mongo:
     image: percona/percona-server-mongodb:7.0    
-    command: >
-      --bind_ip_all
-      --tlsMode requireTLS
-      --tlsCertificateKeyFile /certs/mongodb.pem
-      --tlsCAFile /certs/ca.pem
-      --auth
+    command: ["mongod", "--config", "/mongo/conf/mongod.conf"]
     restart: always
     environment:
       - MONGO_INITDB_ROOT_USERNAME=${MONGO_INITDB_ROOT_USERNAME}
@@ -16,7 +11,10 @@ services:
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - /opt/dedalus/docker/${AIS_WORKSPACE}/mongo/data:/data/db
-      - /opt/dedalus/docker/${AIS_WORKSPACE}/mongo/certs:/certs:ro
+      - /opt/dedalus/docker/${AIS_WORKSPACE}/mongo/ssl:/data/ssl
+      - /opt/dedalus/docker/${AIS_WORKSPACE}/mongo/conf:/data/conf
+      - /opt/dedalus/docker/${AIS_WORKSPACE}/mongo/conf:/mongo/conf:ro
+      - /opt/dedalus/docker/${AIS_WORKSPACE}/mongo/ssl:/ssl:ro
     networks:
       - global_ais
     user: ${DEDALUS_DOCKER_USER}
