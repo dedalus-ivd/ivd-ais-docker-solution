@@ -250,8 +250,7 @@ cd /opt/dedalus/docker/dev/
 ### MongoDB SSL Setup
 1. Prepare SSL Certificate Files
 
-Assume working directory: /opt/dedalus/docker/<WORKSPACE>/mongo/
-
+Assume working directory: /opt/dedalus/docker/<workspace>/mongo/
 mongo/
 ├── conf/
 │   └── mongod.conf
@@ -259,7 +258,7 @@ mongo/
 │   ├── mongodb.pem      # Server certificate + private key
 │   └── ca.pem           # CA certificate
 
-In /opt/dedalus/docker/<WORKSPACE>/mongo/ssl create:
+In /opt/dedalus/docker/<workspace>/mongo/ssl create:
 
 mongodb.pem → Combined cert + private key
 ca.pem → CA certificate that signed the server cert
@@ -272,7 +271,7 @@ Example:
 chmod 600 mongodb.pem ca.pem
 
 2. MongoDB Config File
-Path: /opt/dedalus/docker/<WORKSPACE>/mongo/conf/mongod.conf
+Path: /opt/dedalus/docker/<workspace>/mongo/conf/mongod.conf
 
 # Single application deployment
 
