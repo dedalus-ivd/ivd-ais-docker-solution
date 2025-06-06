@@ -259,13 +259,12 @@ mongo/
 │   └── ca.pem           # CA certificate
 
 In /opt/dedalus/docker/<workspace>/mongo/ssl create:
-
-mongodb.pem → Combined cert + private key
-ca.pem → CA certificate that signed the server cert
+- mongodb.pem → Combined cert + private key
+- ca.pem → CA certificate that signed the server cert
 
 Make sure:
-  -- Both mongodb.pem and ca.pem should have permission 600
-  -- Files are owned by the container runtime user (e.g. dedalus_docker)
+- Both mongodb.pem and ca.pem should have permission 600
+- Files are owned by the container runtime user (e.g. dedalus_docker)
 
 Example:
 chmod 600 mongodb.pem ca.pem
