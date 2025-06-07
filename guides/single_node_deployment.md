@@ -230,11 +230,33 @@ By default the monitoring interface is under the port 27100
 
 ### Configurationg mongo
 - To change the default mongo port -> env/mongo.env
-- To change the default admin user and psw -> env/mongo.env
+- To change the default admin user and psw -> env/mongo.env (defaults are admin/admin)
+
+### MongoDB SSL Setup
+- place the certificate "ca.pem" inside the folder mongo/conf
+- place the "key.pem" file with both the certificate and the key inside the folder mongo/conf
+- to use the self signed certificate refer to the section below
 
 1. Download the mongo configuration and put under the workspace folder
 2. Upload the configuration into the node user home
 3. Log into the node and become the docker user
+4. Copy the configuration into the workspace folder
+
+### using the haproxy self signed certificate
+In this example we assume that we are in a test/deployment environment where we use self-signed certificates
+So we assume to use the one from haproxy
+- From the workspace folder
+- copy the certificate
+```bash
+cp haproxy/conf/haproxy_cert.pem mongo/conf/ca.pem
+```
+- copy the key and the certificate together
+```bash
+cat haproxy/conf/haproxy_cert.pem.key haproxy/conf/haproxy_cert.pem > mongo/conf/key.pem
+```
+
+
+
 ```bash
 cd /opt/dedalus/docker/dev/
 ```
@@ -247,31 +269,6 @@ cd /opt/dedalus/docker/dev/
  docker compose -f mongo-compose.yml --env-file env/shared.env --env-file env/routes.env --env-file mongo/env/mongo.env start
 ```
 
-### MongoDB SSL Setup
-1. Prepare SSL Certificate Files
-
-Assume working directory: /opt/dedalus/docker/WORKSPACE_NAME/mongo/
-```text
-mongo/
-├── conf/
-│   └── mongod.conf
-├── ssl/
-│   ├── mongodb.pem      # Server certificate + private key
-│   └── ca.pem           # CA certificate
-```
-In /opt/dedalus/docker/WORKSPACE_NAME/mongo/ssl create:
-- mongodb.pem → Combined cert + private key
-- ca.pem → CA certificate that signed the server cert
-
-Make sure:
-- Both mongodb.pem and ca.pem should have permission 600
-- Files are owned by the container runtime user (e.g. dedalus_docker)
-
-Example:
-chmod 600 mongodb.pem ca.pem
-
-2. MongoDB Config File
-Path: /opt/dedalus/docker/WORKSPACE_NAME/mongo/conf/mongod.conf
 
 # Single application deployment
 
@@ -294,7 +291,7 @@ For each product you need to check its own docker deployment manual
 ```bash
 docker container ls
 ```
-It should appear somethign like this: that's the name of the container
+It should appear something like this: that's the name of the container
 ![PuTTy Opening](/guides/assets/mongo_install_show_container.png)
 
 if not, start the container
@@ -302,7 +299,7 @@ if not, start the container
 Then enter the container to use the mongoshell
 In this example the user is 'admin' and the psw is 'admin': change them according to the deployment
 ```bash
-docker exec -it dev-mongo-1 mongosh -u admin -p admin
+docker exec -it test-mongo-1 mongosh -u admin -p admin --tls  --tlsAllowInvalidHostnames --tlsAllowInvalidCertificates
 ```
 
 The Shell will open
@@ -320,6 +317,9 @@ db.createUser(
      roles: [{"role":"readWrite","db":"xdiscovery"},{"role":"dbAdmin","db":"xdiscovery"}], 
    } 
 ) 
+```
+```bash
+exit
 ```
 
 ```bash

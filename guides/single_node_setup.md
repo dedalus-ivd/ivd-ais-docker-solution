@@ -5,7 +5,7 @@ Prerequisites
 - A user that can be sudoer
 
 It's possible simply to launch the script /scripts/single_node_setup.sh or simply copy the commands in the console and apply.
-After it you need to do only the steps  2  and 9
+After it you need to do only the steps  2  and 9, 10,11,12
 
 0. Create folders for deployment
 
@@ -76,3 +76,31 @@ sudo usermod -a -G dedalus dedalus_docker
 ```bash
 sudo usermod -a -G dedalus <user> 
 ```
+
+10. Install bash-completion
+```bash
+sudo yum install bash-completion
+```
+11. Enable the docker completion to docker user
+```bash
+su dedalus_docker
+```
+
+Introduce the password
+
+```bash
+cat <<EOT >> ~/.bashrc
+if [ -f /etc/bash_completion ]; then
+    . /etc/bash_completion
+fi
+EOT
+```
+```bash
+source ~/.bashrc
+```
+
+12. Bonus: make the default folder switch on dedalus_docker login
+```bash
+cat <<EOT >> ~/.bashrc
+cd /opt/dedalus/docker/<WORKSPACE_FOLDER>
+EOT
