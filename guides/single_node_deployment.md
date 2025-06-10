@@ -30,7 +30,9 @@ aws configure
 aws sts get-caller-identity
 ```
 
-- ### Before pulling a new image, or using the compose files type, we need to log ing into AWS
+### AWS Login
+Before pulling a new image it's necessary to log in 
+
 ```bash
 aws ecr get-login-password --region eu-west-1 | docker login --username AWS --password-stdin 350801433917.dkr.ecr.eu-west-1.amazonaws.com
 ```
@@ -288,6 +290,13 @@ For each product you need to check its own docker deployment manual
 - from the release, copy the xdiscovery-service-5.1.3\x1v1\conf\xdiscovery-service into the conf folder
 - from the relase, copy the xdiscovery-service-5.1.3\x1v1\docker\.env file into the env folder and rename it ds.env
 
+### Check the proxy configuration
+
+- Every service should be proxied by the HAProxy set up in the node.
+- The configuration of the proxy should handle every AIS service.
+- Check the file haproxy/conf/haproxy.conf to be sure you service is correctly handled [here](https://confluence.dedalus.com/display/IAT/IVD+Services+-+deployment+info) in the table where you see the column HAproxy configuration ready. Otherwise check the documentation of the product
+
+
 ### Setting the deployment info
 - into the ds.env file set the deployment info, in this case we assume xdiscovery as user, psw and db name
 - the MONGODB_CONN_STRING with the url of the mongo , in our case mongo:27017
@@ -353,6 +362,8 @@ exit
 ```
 
 ### create the service
+
+Before creating a new service, to pull an image it necessary to [log in](#aws-login)
 
 ```bash
  docker compose -f ds-compose.yml --env-file env/shared.env --env-file env/routes.env create

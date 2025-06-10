@@ -95,6 +95,7 @@ if [ -f /etc/bash_completion ]; then
 fi
 EOT
 ```
+
 ```bash
 source ~/.bashrc
 ```
