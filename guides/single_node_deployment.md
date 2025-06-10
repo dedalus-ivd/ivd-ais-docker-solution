@@ -277,11 +277,23 @@ For each product you need to check its own docker deployment manual
 
 ## DS deployment
 
-### Deployment zip file download
+- Look at the global instruction from DS, so we llok into the confluence page of the DS, [here](https://confluence.dedalus.com/pages/viewpage.action?spaceKey=XVAL&title=xdiscovery-service+-+5.1.x#xdiscoveryservice5.1.x-DeployDiscoveryServiceonDockerusingDockerCompose)
+- in this case we are asked to download the zip file from [here](http://ci-assetrepo.noemalife.loc/artifactory/releases/eu/dedalus/x1v1/xdiscovery-service/5.1.3/xdiscovery-service-5.1.3.zip)
+- since the deployment does not follow the standards we need to arrange it.
 
-- configuration.json with the identity provider
+### Making the folder
+- create a new folder DS inside the deployment folder with the subfolders conf and env
+- from the release, copy the xdiscovery-service-5.1.3\x1v1\conf\xdiscovery-service into the conf folder
+- from the relase, copy the xdiscovery-service-5.1.3\x1v1\docker\.env file into the env folder and rename it ds.env
+
+### Setting the deployment info
+- into the ds.env file set the deployment info, in this case we assume xdiscovery as user, psw and db name
+- the MONGODB_CONN_STRING with the url of the mongo , in our case mongo:27017
+- the MONGODB_CONN_OPT: in this case true&tlsAllowInvalidHostnames=true&tlsAllowInvalidCertificates=true
 - application.properties according to the ds settings
-- iana.tld.additional= add the dns you want to ad
+- in the application properties set the "iana.tld.additional" property to handle the name of the base solution image
+ex: the solution is at https://your.solution.dedalus set iana.tld.additional=dedalus
+- configuration.json with the identity provider
 
 ### mongo collection creation
 
@@ -322,7 +334,11 @@ db.createUser(
 exit
 ```
 
+### create the service
+
 ```bash
  docker compose -f ds-compose.yml --env-file env/shared.env --env-file env/routes.env create
 ```
-
+```bash
+ docker compose -f ds-compose.yml --env-file env/shared.env --env-file env/routes.env start
+```

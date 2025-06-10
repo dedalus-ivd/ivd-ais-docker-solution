@@ -1,9 +1,8 @@
 services:
   discovery-service:
-    image: 350801433917.dkr.ecr.eu-west-1.amazonaws.com/products/iop/xvalue/ds:5.1.2
+    image: 350801433917.dkr.ecr.eu-west-1.amazonaws.com/products/iop/xvalue/ds:5.1.3
     networks:
-      global_ais:
-        ipv4_address: ${DS_IP}
+      global_ais
     environment:
         JAVA_OPTS: -XX:+ExitOnOutOfMemoryError -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=/opt/dumps
     env_file: 

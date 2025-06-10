@@ -2,10 +2,10 @@ services:
   mongo:
     image: percona/percona-server-mongodb:7.0    
     command:
-        --tlsMode=requireTLS
-        --tlsCAFile=/data/config/ca.pem
-        --tlsCertificateKeyFile=/data/config/key.pem
-        --tlsAllowConnectionsWithoutCertificates
+        #--tlsMode=requireTLS
+        #--tlsCAFile=/data/config/ca.pem
+        #--tlsCertificateKeyFile=/data/config/key.pem
+        #--tlsAllowConnectionsWithoutCertificates
         --bind_ip_all
     restart: always
     environment:
