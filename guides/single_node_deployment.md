@@ -232,7 +232,9 @@ By default the monitoring interface is under the port 27100
 - To change the default mongo port -> env/mongo.env
 - To change the default admin user and psw -> env/mongo.env (defaults are admin/admin)
 
-### MongoDB SSL Setup
+### MongoDB SSL Setup (optional)
+- uncomment the "tls lines" in the "mongo-compose.yml" file
+- in the "tlsMode" line, pick up "requireTLS" or "preferTLS" mode 
 - place the certificate "ca.pem" inside the folder mongo/conf
 - place the "key.pem" file with both the certificate and the key inside the folder mongo/conf
 - to use the self signed certificate refer to the section below
@@ -255,7 +257,7 @@ cp haproxy/conf/haproxy_cert.pem mongo/conf/ca.pem
 cat haproxy/conf/haproxy_cert.pem.key haproxy/conf/haproxy_cert.pem > mongo/conf/key.pem
 ```
 
-
+### Installing the mongo service
 
 ```bash
 cd /opt/dedalus/docker/dev/
@@ -308,11 +310,27 @@ It should appear something like this: that's the name of the container
 
 if not, start the container
 
+You can use whatever tool you may like to connect to the mongo instance.
+In here we use an approach without an external tool
+
 Then enter the container to use the mongoshell
 In this example the user is 'admin' and the psw is 'admin': change them according to the deployment
+
+- No TLS
+```bash
+docker exec -it test-mongo-1 mongosh -u admin -p admin
+```
+
+- Self signed TLS
 ```bash
 docker exec -it test-mongo-1 mongosh -u admin -p admin --tls  --tlsAllowInvalidHostnames --tlsAllowInvalidCertificates
 ```
+
+### commands to create the collection for the Disovery Service
+In here we are using this data:
+dbname = xdiscovery
+user = xdiscovery
+psw = xdiscovery
 
 The Shell will open
 ```bash

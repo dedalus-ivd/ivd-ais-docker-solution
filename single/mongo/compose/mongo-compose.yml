@@ -2,7 +2,7 @@ services:
   mongo:
     image: percona/percona-server-mongodb:7.0    
     command:
-        #--tlsMode=requireTLS
+        #--tlsMode=requireTLS/preferTLS
         #--tlsCAFile=/data/config/ca.pem
         #--tlsCertificateKeyFile=/data/config/key.pem
         #--tlsAllowConnectionsWithoutCertificates
