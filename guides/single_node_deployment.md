@@ -313,22 +313,22 @@ Use the following commands to perform backups and restores on a standalone Mongo
 - Replace CONTAINER_NAME_OR_ID, HOSTNAME, USERNAME, PASSWORD, and the date as needed.
 - Use the --drop option during restore if you want to overwrite existing collections.
 
-#### BACKUP FROM OUTSIDE THE CONTAINER
+#### Backup from the host environment
 ```bash
 docker exec CONTAINER_NAME_OR_ID mongodump --host HOSTNAME --port 27017 -u USERNAME -p PASSWORD --authenticationDatabase admin --out /tmp/mongodump-$(date +%Y%m%d_%H%M%S)
 ```
 
-#### BACKUP INSIDE THE CONTAINER
+#### Backup from inside the container environment
 ```bash
 mongodump --host HOSTNAME --port 27017 -u USERNAME -p PASSWORD --authenticationDatabase admin --out /tmp/mongodump-$(date +%Y%m%d_%H%M%S)
 ```
 
-#### RESTORE FROM OUTSIDE THE CONTAINER
+#### Restore from the host environment
 ```bash
 docker exec CONTAINER_NAME_OR_ID mongorestore --host HOSTNAME --port 27017 -u USERNAME -p PASSWORD --authenticationDatabase admin /tmp/mongodump-TIMESTAMP
 ```
 
-#### RESTORE FROM INSIDE THE CONTAINER
+#### Restore from inside the container environment
 ```bash
 mongorestore --host HOSTNAME --port 27017 -u USERNAME -p PASSWORD --authenticationDatabase admin /tmp/mongodump-TIMESTAMP
 ```
