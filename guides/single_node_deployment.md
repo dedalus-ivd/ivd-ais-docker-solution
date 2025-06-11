@@ -306,29 +306,29 @@ For each product you need to check its own docker deployment manual
 ex: the solution is at https://your.solution.dedalus set iana.tld.additional=dedalus
 - configuration.json with the identity provider
 
-### mongo backup and restore
+### Mongo Backup and Restore
 
 Use the following commands to perform backups and restores on a standalone MongoDB instance running inside a Docker container. These examples assume authentication is enabled and the backup is stored in /tmp.
 
 - Replace CONTAINER_NAME_OR_ID, HOSTNAME, USERNAME, PASSWORD, and the date as needed.
 - Use the --drop option during restore if you want to overwrite existing collections.
 
-# BACKUP FROM OUTSIDE THE CONTAINER
+#### BACKUP FROM OUTSIDE THE CONTAINER
 ```bash
 docker exec CONTAINER_NAME_OR_ID mongodump --host HOSTNAME --port 27017 -u USERNAME -p PASSWORD --authenticationDatabase admin --out /tmp/mongodump-$(date +%Y%m%d_%H%M%S)
 ```
 
-# BACKUP INSIDE THE CONTAINER
+#### BACKUP INSIDE THE CONTAINER
 ```bash
 mongodump --host HOSTNAME --port 27017 -u USERNAME -p PASSWORD --authenticationDatabase admin --out /tmp/mongodump-$(date +%Y%m%d_%H%M%S)
 ```
 
-# RESTORE FROM OUTSIDE THE CONTAINER
+#### RESTORE FROM OUTSIDE THE CONTAINER
 ```bash
 docker exec CONTAINER_NAME_OR_ID mongorestore --host HOSTNAME --port 27017 -u USERNAME -p PASSWORD --authenticationDatabase admin /tmp/mongodump-TIMESTAMP
 ```
 
-# RESTORE FROM INSIDE THE CONTAINER
+#### RESTORE FROM INSIDE THE CONTAINER
 ```bash
 mongorestore --host HOSTNAME --port 27017 -u USERNAME -p PASSWORD --authenticationDatabase admin /tmp/mongodump-TIMESTAMP
 ```
