@@ -196,12 +196,12 @@ cd  /opt/dedalus/docker/<workspace>
 ```
 - create the service
 ```bash
-docker compose -f haproxy-compose.yml --env-file env/shared.env --env-file env/routes.env  --env-file haproxy/env/haproxy.env create
+docker compose -f haproxy-compose.yml --env-file env/shared.env --env-file env/routes.env --env-file env/proxy-map.env --env-file haproxy/env/haproxy.env create
 ```
 
 - run the service
 ```bash
-docker compose -f haproxy-compose.yml --env-file env/shared.env --env-file env/routes.env  --env-file haproxy/env/haproxy.env start
+docker compose -f haproxy-compose.yml --env-file env/shared.env --env-file env/routes.env  --env-file env/proxy-map.env --env-file haproxy/env/haproxy.env start
 ```
 
 ## Monitoring deployment
