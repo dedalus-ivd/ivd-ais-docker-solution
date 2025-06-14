@@ -1,0 +1,2 @@
+docker compose -f monitoring-compose.yml --env-file env/shared.env --env-file env/routes.env  --env-file monitoring/env/monitoring.env create
+docker compose -f monitoring-compose.yml --env-file env/shared.env --env-file env/routes.env  --env-file monitoring/env/monitoring.env start

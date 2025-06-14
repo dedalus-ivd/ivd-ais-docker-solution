@@ -1,0 +1,2 @@
+docker compose -f haproxy-compose.yml --env-file env/shared.env --env-file env/routes.env --env-file env/proxy-map.env --env-file haproxy/env/haproxy.env stop
+docker compose -f haproxy-compose.yml --env-file env/shared.env --env-file env/routes.env --env-file env/proxy-map.env --env-file haproxy/env/haproxy.env rm

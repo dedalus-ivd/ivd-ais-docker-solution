@@ -1,0 +1,1 @@
+docker compose -f ./network-compose.yml --env-file ./env/shared.env --all-resources create

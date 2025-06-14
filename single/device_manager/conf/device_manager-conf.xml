@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<setup>
+  <utenti>
+    <!-- due utenti di sistema non modificabili: solo la password può essere impostata -->
+    <!-- lo scopo è consentire a DM client di avere un utente di riferimento per il collegamento -->
+    <!-- gli utenti sono turbine e anon si consiglia di usare turbine con la relativa password -->
+    <turbine-user password="1234"/>
+    <anon-user password="1234"/>
+  </utenti>
+ 
+  <applicazioni>
+    <applicazione
+      nome="Caleido"
+      uuid="CFB30522-7B0B-44AB-AC0F-ECECB1DCE727"
+      tipo_aut="KEY_SHARE" >
+      <parametri_aut>
+        <param nome="shared-key" valore="trentatre trentini entrarno in trento tutti e trentatre trottando"/>
+      </parametri_aut>
+    </applicazione>
+  </applicazioni>
+ 
+  <devices>
+    <device
+      nome="leggidir"
+      tipo="srvreaddir"
+      devclass="READDIR"
+      descrizione="Lettura directory tmp"
+      tags="dir,file"
+      note=""
+      uuid="28F1F5A6-E033-48CF-9D8B-A725EB70591C"
+      start_auto="Y">
+      <parametri>
+        <param nome="enableReadFiles" valore="true"/>
+        <param nome="enableWriteFiles" valore="false"/>
+        <param nome="Directory" valore="/tmp"/>
+      </parametri>
+    </device>
+  </devices>
+ 
+  <setup_override>
+    <override nome="" valore=""/>
+  </setup_override>
+</setup>
