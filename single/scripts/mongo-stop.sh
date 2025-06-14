@@ -1,0 +1,1 @@
+docker compose -f mongo-compose.yml --env-file env/shared.env --env-file env/proxy-map.env --env-file env/routes.env --env-file mongo/env/mongo.env stop
