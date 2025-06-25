@@ -60,6 +60,11 @@ sudo chown -R dedalus_docker:dedalus_docker /opt/dedalus/docker
 ```bash
 sudo chown -R :dedalus /opt/dedalus/upload
 ```
+ensure that every new filr or dir in this directory has the same group
+
+```bash
+sudo chmod g+s /opt/dedalus/upload
+```
 7. Modify the upload folder so that the group's users can ready and write into it
 
 ```bash
