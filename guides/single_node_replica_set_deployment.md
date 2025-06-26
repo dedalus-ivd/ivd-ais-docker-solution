@@ -160,6 +160,11 @@ docker compose -f ./network-compose.yml --env-file ./env/shared.env --all-resour
 docker network ls
 ```
 
+# Single application deployment - Replicaset
+
+To show the steps to follow for every single product deployment with replica set we will use the Discovery Service as example.
+For each product you need to check its own docker deployment manual
+
 ## Mongo deployment
 
 ### Configurationg mongo
@@ -218,14 +223,6 @@ Confirm with:
 rs.status()
 ```
 
-
-# Single application deployment
-
-To show the steps to follow for every single product deployment we will use the Discovery Service as example.
-For each product you need to check its own docker deployment manual
-
-
-
 ### Mongo Backup and Restore - Automated
 
 The below steps describes how to automate MongoDB backups inside a Docker container, with automatic deletion of backups older than 7 days.
@@ -272,6 +269,15 @@ docker exec pbm-agent pbm status
 ```
 
 All agents should be listed and status should show ready.
+
+#### Optional – Restore
+
+To restore, use:
+```bash
+docker exec pbm-agent pbm list
+docker exec pbm-agent pbm restore <backup-name>
+```
+
 
 ### mongo collection creation
 
