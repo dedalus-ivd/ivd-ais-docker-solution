@@ -230,39 +230,48 @@ For each product you need to check its own docker deployment manual
 
 The below steps describes how to automate MongoDB backups inside a Docker container, with automatic deletion of backups older than 7 days.
 
-#### Step 1: Create the Backup Script
-Create a file named mongo_backup.sh with the following content:
+#### Step 1: Create Backup Folder & Config File
+On all nodes:
 ```bash
-#!/bin/bash
-
-# Rotate backups older than 7 days inside the container
-docker exec CONTAINER_NAME_OR_ID find /tmp -maxdepth 1 -type d -name 'mongodump-*' -mtime +7 -exec rm -rf {} \;
-
-# Load environment variables from .env file
-source /opt/dedalus/docker/test/mongo/env/mongo.env
-
-# Generate timestamped backup directory name
-TIMESTAMP=$(date +%Y%m%d_%H%M%S)
-BACKUP_DIR="/tmp/mongodump-$TIMESTAMP"
-
-# Run mongodump inside the container
-docker exec CONTAINER_NAME_OR_ID mongodump --host HOSTNAME --port 27017 -u "$MONGO_INITDB_ROOT_USERNAME" -p "$MONGO_INITDB_ROOT_PASSWORD" --authenticationDatabase admin --out "$BACKUP_DIR"
+mkdir -p /mongo/backups
 ```
 
-#### Step 2: Make the Script Executable
+Create /mongo/conf/pbm_config.yaml in all nodes:
+
 ```bash
-chmod +x /opt/dedalus/docker/test/mongo_backup.sh
+storage:
+  type: filesystem
+  filesystem:
+    path: /backups
 ```
 
-#### Step 3: Schedule the Cron Job
+#### Step 2: Load PBM Config (Once per node)
+```bash
+docker exec pbm-agent pbm config --file /pbm_config.yaml
+```
+#### Step 3: Test Backup
+```bash
+docker exec pbm-agent pbm backup
+docker exec pbm-agent pbm list
+```
+
+#### Step 4: Automate Daily Backups and Rotation
 Edit the crontab using:
 ```bash
 crontab -e
 ```
 Add the following line to run the backup every day at 5 PM, and log the output to a file:
 ```bash
-0 17 * * * /opt/dedalus/docker/test/mongo_backup.sh >> /tmp/mongo_backup.log 2>&1
+* 17 * * * docker exec pbm-agent pbm backup
+* 18 * * * find /opt/dedalus/docker/test/mongo/backups -mindepth 1 -mtime +7 -exec rm -rf {} \;
 ```
+
+#### Step 5: Verify PBM Agent Status
+```bash
+docker exec pbm-agent pbm status
+```
+
+All agents should be listed and status should show ready.
 
 ### mongo collection creation
 
