@@ -1,0 +1,45 @@
+services:
+  mongo1:
+    image: percona/percona-server-mongodb:7.0
+    container_name: mongo1
+    command: "--replSet rs --bind_ip_all --auth --keyFile /data/keyfile/mongo-keyfile"
+    restart: always
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=${MONGO_INITDB_ROOT_USERNAME}
+      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_INITDB_ROOT_PASSWORD}
+    ports:
+      - ${MONGO_PORT}:27017
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /opt/dedalus/docker/${AIS_WORKSPACE}/mongo/data:/data/db
+      - /opt/dedalus/docker/${AIS_WORKSPACE}/mongo/keyfile:/data/keyfile:ro
+    networks:
+      - global_ais
+    user: ${DEDALUS_DOCKER_USER}
+    logging:
+        driver: "json-file"  # Set the logging driver
+        options:
+            max-size: "10m"      # Maximum size in megabytes of log file before rotation
+            max-file: "3"        # Maximum number of log files to keep
+
+  pbm-agent:
+    image: percona/percona-backup-mongodb:latest
+    container_name: pbm-agent
+    command: ["pbm-agent"]
+    restart: always
+    depends_on:
+      - mongo1
+    environment:
+      PBM_MONGODB_URI: "mongodb://${MONGO_INITDB_ROOT_USERNAME}:${MONGO_INITDB_ROOT_PASSWORD}@mongo1:27017/?authSource=admin&replicaSet=rs"
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /opt/dedalus/docker/${AIS_WORKSPACE}/mongo/backups:/backups
+      - /opt/dedalus/docker/${AIS_WORKSPACE}/mongo/conf/pbm_config.yaml:/pbm_config.yaml:ro
+    user: ${DEDALUS_DOCKER_USER}
+    networks:
+      - global_ais
+
+networks:
+  global_ais:
+    name: ${SHARED_AIS_NETWORK}
+    external: true

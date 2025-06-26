@@ -1,0 +1,9 @@
+networks:
+  ais-network:
+    name: ${SHARED_AIS_NETWORK}
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 10.6.0.0/27
+          ip_range: 10.6.0.0/27
+          gateway: 10.6.0.1
