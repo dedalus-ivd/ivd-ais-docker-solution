@@ -9,12 +9,20 @@
 - A software to transfer files: the console con be good or [WinSCP](https://winscp.net/eng/download.php)
 - the ssh key that usually is needed to connect to the node (otherwise can be only username and password, depends on the environment)
 
+## Switch to dedalus docker user
+To run the docker instructions you need to become the "dedalus_docker" user
+
+```bash
+su dedalus_docker
+```
+Then type the password
+
 ## AWS Credentials registration and use
 Before pulling the Dedalus images from the repositories it's necessary to register the credentials
 
 The credentials can be found [here](https://confluence.dedalus.com/display/IAT/IVD+Services+-+deployment+info)
 
-- Log into the node and switch user to dedalus_docker 
+- Log into the node and [switch to deadlus_docker user](#switch_to_dedalus_docker_user)
 - type 
 ```bash
 aws configure
@@ -73,8 +81,8 @@ example:<br>
 
 <b>env</b> folder
 under the "env" folder there will be the common used variables in the files
-- /opt/dedalus/docker/prod/shared.env
-- /opt/dedalus/docker/prod/routes.env
+- /opt/dedalus/docker/prod/env/shared.env
+- /opt/dedalus/docker/prod/env/routes.env
 
 ### services folders
 Each service needs to produce a release compose of these folders
@@ -87,11 +95,8 @@ Each service needs to produce a release compose of these folders
 
 ## Workspace folder setup
 
-- Log into the node with your credentials and create the workspace folders
-```bash
-mkdir /opt/dedalus/upload/<workspace>
-```
-- switch to dedalus_docker user and create the same workspace into the docker space
+
+- [switch to deadlus_docker user](#switch_to_dedalus_docker_user) user and create the same workspace into the docker space
 ```bash
 mkdir  /opt/dedalus/docker/<workspace>
 ```
@@ -102,7 +107,7 @@ mkdir  /opt/dedalus/docker/<workspace>
 For all the following examples I will assume
 - The node user that can connect to the node is: <b>ec2-user</b>
 - The docker user that can operate on docker is : <b>dedalus_docker</b>
-- The workspace we are using is : <b>dev</b>
+- The workspace we are using is : <b>test</b>
 
 1. Prepare your deployment on the workstation you are using: that means that you have to put the files under a folder that has one of the workspace names : dev, prod, test, valid.
 It has to look like the folder structure you see [here](https://confluence.dedalus.com/display/IAT/Docker+deployment+-+component+requirements#Dockerdeploymentcomponentrequirements-Deploymentstructure)
