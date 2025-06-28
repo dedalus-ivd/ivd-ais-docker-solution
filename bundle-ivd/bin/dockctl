@@ -1,0 +1,100 @@
+#!/bin/bash
+
+#------------------------------------------------------------------------------
+# dockctl - a command wrapper for docker
+#
+# Author: G.Grimoldi
+# Version: 1.0
+#------------------------------------------------------------------------------
+
+
+#------------------------------------------------------------------------------
+# VARIABLES
+#------------------------------------------------------------------------------
+
+# PARAMETERS
+CMD=$1
+SERVICE_NAME=$2
+
+# map registering available services and related project dirs
+source ./services.map
+
+# get the dir where this script resides
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+#------------------------------------------------------------------------------
+# COMMANDS
+#------------------------------------------------------------------------------
+
+#----------------------------------------------------------
+# _run_service
+# Runs the the specific service for the given container
+#
+# @param dir directory where the service project resides
+#----------------------------------------------------------
+_run_service () {
+	$SCRIPT_DIR/../$1/scripts/run-service.sh $CMD $SERVICE_NAME
+}
+
+#----------------------------------------------------------
+# _help
+# Shows a banner with command help
+#----------------------------------------------------------
+_help () {
+	echo ""
+    echo --- ========================================================
+    echo --- [HELP]
+    echo --- How to run:
+    echo --- '    ./dockctl <command_name> <service_name>'
+    echo --- ========================================================
+    echo --- Available commands
+    echo --- 'CMD          DESCRIPTION'
+    echo --- ============ ===========================================
+    echo --- 'start        Starts the given service'
+    echo --- 'stop         Stops the given service'
+    echo --- 'restart      Stops and starts the given service'
+    echo --- 'logs         Shows a log of the given service'
+    echo --- 'bash         Runs the service opening a shell'
+    echo --- 'status       Shows status and stats of the given service'
+    echo --- 'removeimg    Removes an image (asking for a version)'
+    echo --- 'help         Shows an help banner'
+    echo --- ========================================================
+    echo --- Available services
+    echo --- The ones registered to be addressed and included
+	echo --- inside each "compose.yml"
+    echo --- ========================================================
+}
+
+#----------------------------------------------------------
+# run_cmd: main command
+# Runs the API services for registered containers
+#
+# @param cmd api command to run
+# @param service service to address
+#----------------------------------------------------------
+run_cmd() {
+	echo ""
+	
+	# show an help banner if no command was passed or used "help" as command
+	if [[ "$1" == "help" || -z "$1" || -z "$2" ]];
+    then
+        _help
+		exit 0
+	fi
+	
+	# Checks if the service is included in the available ones
+	# and gets the directory name of the project
+	# The runs the given command
+	if [[ -v SERVICE_MAP["$2"] ]]; then
+		SERVICE_DIR="${SERVICE_MAP[$2]}"
+		echo "--- Run service '$SERVICE_NAME' for project '$SERVICE_DIR'"
+		_run_service $SERVICE_DIR
+	else
+		echo "--- Service '$2' is NOT registered as available."
+	fi
+} 
+
+#------------------------------------------------------------------------------
+# MAIN
+#------------------------------------------------------------------------------
+run_cmd $CMD $SERVICE_NAME

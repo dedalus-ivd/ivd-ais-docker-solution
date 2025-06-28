@@ -1,0 +1,11 @@
+{
+  "RESTAUTH":{
+    "description":"REST Authorization Provider",
+    "endpoint":"http://ivdais-backend:8080/Quincy/rest/athena/auth/dbAuthProviderLogin" ,
+    "oid":"1.2.3.4.5.6.7.9",
+    "login_attempts":3,
+    "login_max_attemps_locktime_insecs":120,
+    "login_change_pwd_endpoint":"",
+    "disableSSLCertificateChecking":"true"
+  }
+}

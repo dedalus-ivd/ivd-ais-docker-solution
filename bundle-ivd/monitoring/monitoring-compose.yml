@@ -1,0 +1,81 @@
+services:
+  grafana:
+    image: grafana/grafana:11.2.0
+    restart: always
+    volumes:
+      # - ./grafana.ini:/etc/grafana/grafana.ini
+      - ./environments/${AIS_WORKSPACE}/conf/grafana/grafana-config.ini:/etc/grafana/grafana.ini
+      - ./environments/${AIS_WORKSPACE}/data/grafana:/var/lib/grafana
+      # - grafana-data:/var/lib/grafana
+    networks:
+      - global_ais
+    environment:
+      - GF_AUTH_ANONYMOUS_ENABLED=true
+      - GF_AUTH_ANONYMOUS_ORG_ROLE=Admin
+    depends_on:
+      - loki
+      - prometheus
+    user: ${DEDALUS_DOCKER_USER}
+  loki:
+    image: grafana/loki:3.2.0
+    restart: always
+    volumes:
+      - ./environments/${AIS_WORKSPACE}/conf/loki/loki-config.yaml:/etc/loki/loki-config.yaml
+      # - ./loki-config.yaml:/etc/loki/loki-config.yaml
+      - ./environments/${AIS_WORKSPACE}/data/loki:/loki
+      # - loki-data:/loki
+    networks:
+      - global_ais
+    command: -config.file=/etc/loki/loki-config.yaml
+    user: ${DEDALUS_DOCKER_USER}
+
+  promtail:
+    image: grafana/promtail:3.2.0
+    restart: always
+    volumes:
+      - ./environments/${AIS_WORKSPACE}/conf/promtail/promtail-config.yaml:/etc/promtail/promtail-config.yaml
+      # - ./promtail-config.yaml:/etc/promtail/promtail-config.yaml
+      - /var/lib/docker/containers:/var/lib/docker/containers:ro
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - global_ais
+    command: -config.file=/etc/promtail/promtail-config.yaml
+    
+
+  prometheus:
+    image: prom/prometheus:v2.54.1
+    restart: always
+    volumes:
+      - ./environments/${AIS_WORKSPACE}/conf/prometheus/prometheus-config.yml:/etc/prometheus/prometheus.yml
+      # - ./prometheus.yml:/etc/prometheus/prometheus.yml
+      - ./environments/${AIS_WORKSPACE}/data/prometheus:/prometheus
+      # - prometheus-data:/prometheus
+    networks:
+      - global_ais
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+    user: ${DEDALUS_DOCKER_USER}
+
+  cadvisor:
+    image: gcr.io/cadvisor/cadvisor:v0.50.0
+    restart: always
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:ro
+      - /sys:/sys:ro
+      - /var/lib/docker/:/var/lib/docker:ro
+      - /dev/disk/:/dev/disk:ro
+    networks:
+      - global_ais
+    privileged: true
+
+networks:
+  global_ais:
+    name: ${SHARED_AIS_NETWORK}
+    external: true
+
+# volumes:
+#   grafana-data:
+#   loki-data:
+#   prometheus-data:

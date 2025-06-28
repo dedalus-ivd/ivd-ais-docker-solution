@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<setup>
+	<utenti>
+		<turbine-user password="1234"/>
+		<anon-user password="1234"/>
+	</utenti>
+	<applicazioni>
+		<applicazione nome="R4C" uuid="02CCCB05-B3AC-489F-8697-94661DA55B1A" tipo_aut="KEY_SHARE">
+			<parametri_aut>
+				<param nome="shared-key" valore="this-1s-A-test"/>
+			</parametri_aut>
+		</applicazione>
+	</applicazioni>
+	<devices>
+		<device nome="leggidir" tipo="srvreaddir" devclass="READDIR" descrizione="Lettura directory tmp" tags="dir,file" note="" uuid="28F1F5A6-E033-48CF-9D8B-A725EB70591C" start_auto="Y">
+			<parametri>
+				<param nome="enableReadFiles" valore="true"/>
+				<param nome="enableWriteFiles" valore="false"/>
+				<param nome="Directory" valore="/tmp"/>
+			</parametri>
+		</device>
+		<device nome="testfirma" uuid="6E853138-EDA8-4B40-9383-C824268C4841" tipo="simulafirma" devclass="SIGN_REF" descrizione="Test firma remota" tags="pin" note="" start_auto="Y"/>
+		<device nome="srvSignArubaRemUnInternet" uuid="1B4066F5-5288-4CE6-9D68-4F7F59EC5BBE" tipo="srvSignArubaRemUn" devclass="SIGN_REF" descrizione="Sign Aruba Remote (Token) Internet" tags="" note="Sign Aruba Remote (Token) Internet" start_auto="Y">
+			<parametri>
+				<param nome="activeAtStartup" valore="true"/>
+			</parametri>
+		</device>
+		<device nome="infocert" uuid="8D607C25-DF4F-4FAC-BAC6-5495C9DFD630" tipo="srvSignInfocertProxySign" devclass="SIGN_REF" descrizione="Sign Infocert ProxySign" tags="" note="" start_auto="N"/>
+	</devices>
+	<setup_override>
+		<override nome="" valore=""/>
+	</setup_override>
+</setup>

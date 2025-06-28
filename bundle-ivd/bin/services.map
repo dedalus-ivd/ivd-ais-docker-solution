@@ -1,0 +1,17 @@
+#------------------------------------------------------------------------------
+# services.map - maps available services
+#
+# Author: G.Grimoldi
+# Version: 1.0
+#------------------------------------------------------------------------------
+
+# map registering available services and related project dirs
+#     [service name]=project directory
+# More services could be mapped on a single dir
+#
+
+declare -A SERVICE_MAP=(
+	["r4c-gateway"]="r4c" 
+	["r4c-apps"]="r4c" 
+	["ds"]="ds"
+)
