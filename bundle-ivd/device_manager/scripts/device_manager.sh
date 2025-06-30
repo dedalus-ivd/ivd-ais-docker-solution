@@ -1,6 +1,6 @@
 #!/bin/bash
 BUNDLE=device_manager
-COMPOSE_FILE="$BUNDLE-compose.yml"
+COMPOSE_FILE="docker-compose.yaml"
 ENV_FILE="$BUNDLE.env"
 envs=("prod" "test" "stage" "dev" "valid")
 commands=("create" "start" "stop" "remove" "recreate" restart"")
