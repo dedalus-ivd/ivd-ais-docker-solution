@@ -81,20 +81,20 @@ Each service needs to produce a release compose of these folders
 - data: where the application can write
 - secrets: to keep the secrets
 
-Example:
-ivdservice_AAA/
-├── docker-compose.yaml
-├── environments
-│   ├── prod
-│   └── stage
-│       ├── conf
-│       │   ├── conf-file-AAA-1.xml
-│       │   └── conf-file-AAA-2.xml
-│       ├── data
-│       ├── env
-│       │   └── ivdservice_AAA.env
-│       └── secrets
-└── scripts
+Example:<br>
+ivdservice_AAA/<br>
+├── docker-compose.yaml<br>
+├── environments<br>
+│   ├── prod<br>
+│   └── stage<br>
+│       ├── conf<br>
+│       │   ├── conf-file-AAA-1.xml<br>
+│       │   └── conf-file-AAA-2.xml<br>
+│       ├── data<br>
+│       ├── env<br>
+│       │   └── ivdservice_AAA.env<br>
+│       └── secrets<br>
+└── scripts<br>
 
 
 ## Workspace folder setup
