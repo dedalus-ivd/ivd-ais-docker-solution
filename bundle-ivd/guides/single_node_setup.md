@@ -15,7 +15,7 @@ This scripts will creates the structure for running the docker services
 - A user that can be sudoer
 
 It's possible simply to launch the script /guides/single_node_setup.sh or simply copy the commands in the console and apply.
-After it you need to do only the steps  2  and 9, 10,11,12
+After it you need to do only the step 12
 
 0. Create folders for deployment
 
@@ -94,22 +94,14 @@ sudo chmod g+s /opt/dedalus/docker
 sudo usermod -a -G dedalus dedalus_docker 
 ```
 
-
-9. Assign every user to the group dedalus to allow him to upload the conf: this should be done for every user that will upload the configuration
-
-```bash
-sudo usermod -a -G dedalus <user> 
-```
-
-10. Install bash-completion
+9. Install bash-completion
 ```bash
 sudo dnf -y install bash-completion
 ```
-11. Enable the docker completion to docker user
+10. Enable the docker completion to docker user
 ```bash
 su dedalus_docker
 ```
-
 Introduce the password
 
 ```bash
@@ -124,8 +116,15 @@ EOT
 source ~/.bashrc
 ```
 
-12. Bonus: make the default folder switch on dedalus_docker login
+11. Bonus: make the default folder switch on dedalus_docker login
 ```bash
 cat <<EOT >> ~/.bashrc
 cd /opt/dedalus/docker/bundles
 EOT
+```
+
+12. Assign every user to the group dedalus to allow him to upload the conf: this should be done for every user that will upload the configuration
+
+```bash
+sudo usermod -a -G dedalus <user> 
+```

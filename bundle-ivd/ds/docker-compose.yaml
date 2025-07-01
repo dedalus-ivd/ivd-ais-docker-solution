@@ -7,7 +7,7 @@ services:
     environment:
         JAVA_OPTS: -XX:+ExitOnOutOfMemoryError -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=/opt/dumps
     env_file: 
-      - path: ./environments/${AIS_WORKSPACE}/env/ds.env
+      - path: ./environments/${AIS_WORKSPACE}/env/services.env
     user: ${DEDALUS_DOCKER_USER}
     logging:
         driver: "json-file"  # Set the logging driver

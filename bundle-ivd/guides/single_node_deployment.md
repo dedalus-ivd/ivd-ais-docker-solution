@@ -58,16 +58,18 @@ The workspace where we will put our bundles is
 /opt/dedalus/docker/bundles
 
 ### main folders
-Each service will release its own package that will be, in the and, a directory to put under the directlry "bundles"
+Each service will release its own package that will be, in the and, a directory to put under the directly "bundles"
+Each service will release a "bundle" [following this structure](https://confluence.dedalus.com/display/IAT/Docker+deployment+-+component+requirements)
 
 example:<br>
-/opt/dedalus/docker/prod/ds-compose.yml<br>
-/opt/dedalus/docker/prod/mongo-compose.yml
+/opt/dedalus/docker/bundles/ds<br>
+/opt/dedalus/docker/bundles/device_manager
 
 <b>env</b> folder
-under the "global-env" folder there will be the common used variables in the files
-- /opt/dedalus/docker/bundles/global-env/stage/shared.env
-- /opt/dedalus/docker/bundles/global-env/stage/routes.env
+The  "global-env" bundle will containes shared common variable values
+- /opt/dedalus/docker/bundles/global-env/environments/stage/env/shared.env
+- /opt/dedalus/docker/bundles/global-env/environments/stage/env/routes.env
+- /opt/dedalus/docker/bundles/global-env/environments/stage/env/proxy-map
 
 ### services folders
 Each service needs to produce a release compose of these folders
@@ -99,8 +101,7 @@ ivdservice_AAA/<br>
 
 ## Workspace folder setup
 
-
-- [switch to deadlus_docker user](#switch_to_dedalus_docker_user) user and create the same workspace into the docker space
+- [switch to dedalus_docker user](#switch_to_dedalus_docker_user) user and create the same workspace into the docker space
 ```bash
 mkdir  /opt/dedalus/docker/bundles
 ```
@@ -113,25 +114,33 @@ For all the following examples I will assume
 - The docker user that can operate on docker is : <b>dedalus_docker</b>
 - The environemnt we are using is : <b>stage</b>
 
+The target of this part of the documentation is to bring the "bundles" folder with alle the bundles in it into the folder /opt/dedalus/docker/bundles.
+Of course you can do it in many ways, download it directly into the node for example.
+In this guide we assume a more "common" approach based on the fact that many persons like to edit files in a classic PC environment
+
+NB: it you are using windows, use an editor that keeps the Unix EOL, not the windows one!!
+
+0. If you want to start from an extarnal machine, create a folder like customer/bundles somewhere
+
 1. Prepare your deployment on the workstation you are using: that means that you have to put the files under a folder that is called "bundles"
 It has to look like the folder structure you see [here](https://confluence.dedalus.com/display/IAT/Docker+deployment+-+component+requirements#Dockerdeploymentcomponentrequirements-Deploymentstructure)
 
-2. Download the [bundle-ivd](https://github.com/dedalus-ivd/ivd-ais-docker-solution/releases/download/v1.0/bundle-ivd.zip) that will contain the network, mongo, haproxy, monitoring and the env folder. Unzip it into your pc under the workspace folder you prepared for the deployment
+2. Download the [bundle-ivd](https://github.com/dedalus-ivd/ivd-ais-docker-solution/releases/download/v1.0/bundle-ivd.zip) that will contain the network, mongo, haproxy, monitoring and the env folder. Unzip it into your pc under the bundles folder you prepared for the deployment
 
-3. Download release zip file for each service product you are going to deploy and put it into the workspace folder (r4c, ds, ld....)
+3. Download release zip file for each service product you are going to deploy and put it into the bundles folder (r4c, ds, ld....)
 
-4. Configure global-env/environments/stage/shared.env (this goes for "stage" environment) file variables:
-- Set the AIS_WORKSPACE using the correct one (file global-env/environments/stage/shared.env)
-- Set the SOLUTION_BASE_URL using the solution one (file global-env/environments/stage/routes.env): this should be the base url in front of the solution, not the node one (even thought they can be the same) but if, for example, there is a load balancer in front of two nodes, you need to use the address of the load balancer
+4. Configure global-env/environments/stage/env/shared.env (this goes for "stage" environment) file variables:
+- Set the AIS_WORKSPACE using the correct one (file global-env/environments/stage/env/shared.env) the value is stage, for stage, prod for prod...etc
+- Set the SOLUTION_BASE_URL using the solution one (file global-env/environments/stage/env/routes.env): this should be the base url in front of the solution, not the node one (even thought they can be the same) but if, for example, there is a load balancer in front of two nodes, you need to use the address of the load balancer
 
-5. configure each product: in this guide we will cover the mongo, the haproxy and we take the discovery service as example so configure them before uploading the files
+5. configure each product: in this guide we will cover the mongo (only for stage purposes), the haproxy, the monitoring and we take the discovery service as example so configure them before uploading the files
 
 6. Upload your folder into the node. It should land in the upload folder /opt/dedalus/upload, in this case:
-So you will end up having the configuration under the folder /opt/dedalus/upload/dev (or prod/test/valid)
+So you will end up having the configuration under the folder /opt/dedalus/upload/bundles 
 
 9. Log into the node using an ssh like tool (like PuTTy or directly using the shell)
 
-10. Switch to the docker user (you will be asked for a password if any)
+10. [switch to dedalus_docker user](#switch_to_dedalus_docker_user) (you will be asked for a password if any)
 ```bash
 su dedalus_docker
 ```
@@ -141,6 +150,14 @@ su dedalus_docker
 ```bash
 cp -r /opt/dedalus/upload/bundles /opt/dedalus/docker/
 ```
+
+NB: in this first step we copy all the directory from the upload to the workspace directory. Later you will do probably some ittle modification.
+You can choose the approach you like to bring the files into the workspace folder(opt/dedalus/docker/bundles)<br>
+Our suggestions is to copy "only what is change" and to follow "always" the same copy direction:<br>
+Local folder -> upload folder -> workspace folder <br>
+You can work directly into the upload folder and go <br>
+upload folder ->workspace folder
+But we suggest to keep the upload folder updated so that if another user has to synchronize to the last modification he can do it
 
 11. Go the bundles folder 
 
@@ -158,7 +175,7 @@ cd /opt/dedalus/docker/bundles/network
 ```
 
 ```bash
-bash scripts/network.sh stage create
+bash scripts/compose.sh stage create
 ```
 4. Check the correct creation
 
@@ -194,7 +211,7 @@ cd  /opt/dedalus/docker/bundles/haproxy
 ```
 - create the service
 ```bash
-bash scripts/haproxy.sh stage create
+bash scripts/compose.sh stage create
 ```
 
 - check the deployment
@@ -210,7 +227,7 @@ You should have an haproxy container running
 ## Monitoring deployment
 
 1. Log into the node
-2. Switch to the dedalus_docker user
+2. [switch to dedalus_docker user](#switch_to_dedalus_docker_user)
 3. go to the monitoring folder
 
 ```bash
@@ -218,7 +235,7 @@ cd  /opt/dedalus/docker/bundles/monitoring
 ```
 - create the service
 ```bash
-bash scripts/monitoring.sh stage create
+bash scripts/compose.sh stage create
 ```
 
 ### Monitoring configurationg
@@ -244,7 +261,7 @@ cd  /opt/dedalus/docker/bundles/mongo
 ```
 - create the service
 ```bash
-bash scripts/mongo.sh stage create
+bash scripts/mongo.sh compose create
 ```
 
 # Single application deployment
@@ -339,14 +356,14 @@ exit
 
 ### create the service
 
-Before creating a new service, to pull an image it necessary to [log in](#aws-login)
+Before creating a new service, to pull an image it necessary to [log in](#aws-login) to AWS 
 
 ```bash
 cd  /opt/dedalus/docker/bundles/ds
 ```
 - create the service
 ```bash
-bash scripts/ds.sh stage create
+bash scripts/ds.sh compose create
 ```
 
 Now we check for the serviec to be up

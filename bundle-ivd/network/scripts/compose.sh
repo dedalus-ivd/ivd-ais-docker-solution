@@ -1,7 +1,7 @@
 #!/bin/bash
 
 create() {
-    docker compose -f ./docker-compose.yaml --env-file ../global-env/environments/$ENVIRONMENT/shared.env --env-file ./environments/$ENVIRONMENT/env/network.env --all-resources create
+    docker compose -f ./docker-compose.yaml --env-file ../global-env/environments/$ENVIRONMENT/env/shared.env --env-file ./environments/$ENVIRONMENT/env/compose.env --all-resources create
 }
 
 envs=("prod" "test" "stage" "dev" "valid")
