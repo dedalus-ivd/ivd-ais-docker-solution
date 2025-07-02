@@ -125,7 +125,16 @@ NB: it you are using windows, use an editor that keeps the Unix EOL, not the win
 1. Prepare your deployment on the workstation you are using: that means that you have to put the files under a folder that is called "bundles"
 It has to look like the folder structure you see [here](https://confluence.dedalus.com/display/IAT/Docker+deployment+-+component+requirements#Dockerdeploymentcomponentrequirements-Deploymentstructure)
 
-2. Download the [bundle-ivd](https://github.com/dedalus-ivd/ivd-ais-docker-solution/releases/download/v1.0/bundle-ivd.zip) that will contain the network, mongo, haproxy, monitoring and the env folder. Unzip it into your pc under the bundles folder you prepared for the deployment
+2. Download the [bundle-ivd](https://github.com/dedalus-ivd/ivd-ais-docker-solution/releases/download/v1.0/bundle-ivd.zip) that will contain the network, mongo, haproxy, monitoring and the env folder. Unzip it into your pc and then copy the content inside the bundles folder you prepared for the deployment.
+You will have: <br>
+bundles/<br>
+├── device_manager<br>
+├── ds<br>
+├── global-env<br>
+├── haproxy<br>
+├── mongo<br>
+├── monitoring<br>
+└── network<br>
 
 3. Download release zip file for each service product you are going to deploy and put it into the bundles folder (r4c, ds, ld....)
 
@@ -133,7 +142,7 @@ It has to look like the folder structure you see [here](https://confluence.dedal
 - Set the AIS_WORKSPACE using the correct one (file global-env/environments/stage/env/shared.env) the value is stage, for stage, prod for prod...etc
 - Set the SOLUTION_BASE_URL using the solution one (file global-env/environments/stage/env/routes.env): this should be the base url in front of the solution, not the node one (even thought they can be the same) but if, for example, there is a load balancer in front of two nodes, you need to use the address of the load balancer
 
-5. configure each product: in this guide we will cover the mongo (only for stage purposes), the haproxy, the monitoring and we take the discovery service as example so configure them before uploading the files
+5. configure each product: in this guide we will cover the mongo (only for stage purposes), the haproxy, the monitoring and we take the discovery service and device manager as example so configure them before uploading the files
 
 6. Upload your folder into the node. It should land in the upload folder /opt/dedalus/upload, in this case:
 So you will end up having the configuration under the folder /opt/dedalus/upload/bundles 
@@ -197,14 +206,18 @@ GLOBAL_AIS_NETWORK_stage is what we have just created
 ## HA proxy deployment
 
 Before deploy the proxy you will need to decide what certificate are you going to use to secure the communications.
+Usually will be customer to give you the certificate
 
 ### Existing certificate.
-If you already have the certificate, please rename the certificate as "haproxy_cert.pem" and the key as "haproxy.pem.key" and place them into the "haproxy/conf" folder before uploading the configuration
+If you already have the certificate, please rename the certificate as "haproxy_cert.pem" and the key as "haproxy.pem.key" and place them into the "haproxy/environments/stage/conf" (for stage env)folder before uploading the configuration. Or just one file "haprox_cert.pem" with both the key and the certificate inside.
+
+### Self signed certificate.
+In case you need a quick solution you can eventually create you own self-signed certificate following this [instructions](haproxy_self_signed_certificate.md)
 
 ### Configuration statistics
-- It is possibile to change the statitic port , user and psw -> env/haproxy.env
+- It is possibile to change the statistic port , user and psw inside the file haproxy/environments/stage/env/haproxy.env
 - to change the statistics deployment, you need to change the conf/haproxy.cfg
-- Default URL is http://your.solution.env:27101/stats
+- Default URL is https://your.solution.env:27101/stats (admin / admin)
 - go back to the haproxy folder
 ```bash
 cd  /opt/dedalus/docker/bundles/haproxy
@@ -215,12 +228,18 @@ bash scripts/compose.sh stage create
 ```
 
 - check the deployment
-go to the page http://your.solution.env:27101/stats and check the stats page with the user and psw you set
+go to the page https://your.solution.env:27101/stats and check the stats page with the user and psw you set
 ```bash
 docker container ls
 ```
 
 You should have an haproxy container running
+
+### HAPROXY configuration
+If you deploy services that are already registered the default configuration is capable to handle them without doing anything.<br>
+To see if a service is already registered you need to go [here](https://confluence.dedalus.com/display/IAT/IVD+Services+-+deployment+info#IVDServicesdeploymentinfo-Servicesdeploymentinfo)<br>
+In the table there is a column to check the HAPROXY configuration availability , another one to see the paths that the services is exposing in the proxy
+If you need to configure the proxy differently you should contact someone export on HAPROXY and look to a detailed documentation [here](./haproxy_details.md)
 
 
 
@@ -238,7 +257,7 @@ cd  /opt/dedalus/docker/bundles/monitoring
 bash scripts/compose.sh stage create
 ```
 
-### Monitoring configurationg
+### Monitoring configurationg (optional)
 By default the monitoring interface is under the port 27100
 
 1. Log into the page https://your.soulution.env:27100
@@ -246,11 +265,12 @@ By default the monitoring interface is under the port 27100
 3. The interface will ask to change the password
 4. Follow the guide [here](https://confluence.dedalus.com/display/IAT/Enterprise+Log+Monitoring+Solution+with+Loki%2C+Promtail%2C+and+Grafana+on+Docker+Swarm) at Step 3: configure Grafana.
 
-## Mongo deployment
+## Mongo deployment (optional)
+Mongo docker deployment is only for stage environments
 
 ### Configurationg mongo
-- To change the default mongo port -> environments/stage/mongo.env
-- To change the default admin user and psw -> environments/stage/mongo.env (defaults are admin/admin)
+- To change the default mongo port -> environments/stage/env/compose.env
+- To change the default admin user and psw -> environments/stage/env/compose.env (defaults are admin/admin)
 
 
 ### Installing the mongo service
@@ -261,45 +281,49 @@ cd  /opt/dedalus/docker/bundles/mongo
 ```
 - create the service
 ```bash
-bash scripts/mongo.sh compose create
+bash scripts/compose.sh stage create
 ```
 
 # Single application deployment
-
-To show the steps to follow for every single product deployment we will use the Discovery Service as example.
-For each product you need to check its own docker deployment manual
-
 Basic steps
 - Download the service bundle (the zip fila that should respect the bundle structure)
 - Place it under the "bundles" folder among the others
-- Follow the service docs to deploy and run it
+- Follow the service documentation to deploy and run it
 
-To know if a services has already bundled correctly its solution check the table [here](https://confluence.dedalus.com/display/IAT/IVD+Services+-+deployment+info)
+## Bundle availability and haproxy configuration
+To know if a services has been already bundled correctly its solution and if we already covered its services inside the default HAproxy configuration check the table [here](https://confluence.dedalus.com/display/IAT/IVD+Services+-+deployment+info#IVDServicesdeploymentinfo-Servicesdeploymentinfo)
+
+## Discovery Service and Device Manager
+Since the discovery services and the device manager are part of the IVD they are not already bundles in this way.<br>
+So, for this release, we bundled them and release the bundles inside the "bundle-ivd" but in the future they will be removed and you will need to download them following their instruction
+
+- Discovery Service 5.1.2
+- Device Manager compact_3.1.0
 
 ## DS deployment
+To show the steps to follow for every single product deployment we will use the Discovery Service as example.
+For each product you need to check its own docker deployment manual
 In the first release of the IVD Bundle we cover the deployment of the Discovery Service 5.1.2
 
-- Look at the global instruction from DS, so we llok into the confluence page of the DS, [here](https://confluence.dedalus.com/pages/viewpage.action?spaceKey=XVAL&title=xdiscovery-service+-+5.1.x#xdiscoveryservice5.1.x-DeployDiscoveryServiceonDockerusingDockerCompose)
+### Bundle the DS (Optional)
+In this part we show how we bundled the solution they released.
+You can skip it and go directly to the "Setting the deployment"
+
+- Look at the global instruction from DS, so we look into the confluence page of the DS, [here](https://confluence.dedalus.com/pages/viewpage.action?spaceKey=XVAL&title=xdiscovery-service+-+5.1.x#xdiscoveryservice5.1.x-DeployDiscoveryServiceonDockerusingDockerCompose)
 - in this case we are asked to download the zip file from [here](http://ci-assetrepo.noemalife.loc/artifactory/releases/eu/dedalus/x1v1/xdiscovery-service/5.1.3/xdiscovery-service-5.1.2.zip)
 - since the deployment does not follow the standards we need to arrange it.
 
 ### Making the folder
-- create a new folder DS inside the bundles folder with the subfolders conf and env
+- create a new folder "ds" inside the bundles folder with the subfolders "environments/stage/conf" and "environments/stage/env"
 - from the release, copy the xdiscovery-service-5.1.2\x1v1\conf\xdiscovery-service into the conf folder
-- from the relase, copy the xdiscovery-service-5.1.2\x1v1\docker\.env file into the env folder and rename it ds.env
-
-### Check the proxy configuration
-
-- Every service should be proxied by the HAProxy set up in the node.
-- The configuration of the proxy should handle every AIS service.
-- Check the file haproxy/conf/haproxy.conf to be sure you service is correctly handled [here](https://confluence.dedalus.com/display/IAT/IVD+Services+-+deployment+info) in the table where you see the column HAproxy configuration ready. Otherwise check the documentation of the product
+- from the relase, copy the xdiscovery-service-5.1.2\x1v1\docker\.env file into the env folder and rename it services.env
 
 
-### Setting the deployment info
-- into the ds.env file set the deployment info, in this case we assume xdiscovery as user, psw and db name
-- the MONGODB_CONN_STRING with the url of the mongo , in our case mongo:27017
+### Setting the deployment 
+- into the services.env file set the deployment info, in this case we assume xdiscovery as user, psw and db name
+- the MONGODB_CONN_STRING with the url of the mongo (in the case you use the mongo installed on the node, hetn use the node IP or the node name)
 - application.properties according to the ds settings
-- in the application properties set the "iana.tld.additional" property to handle the name of the base solution image
+- <b>NB</b>: in the application properties set the "iana.tld.additional" property to handle the name of the base solution image
 ex: the solution is at https://your.solution.dedalus set iana.tld.additional=dedalus
 - configuration.json with the identity provider
 
@@ -313,7 +337,7 @@ ex: the solution is at https://your.solution.dedalus set iana.tld.additional=ded
 docker container ls
 ```
 It should appear something like this: that's the name of the container
-![PuTTy Opening](./guides/assets/mongo_install_show_container.png)
+![PuTTy Opening](./assets/mongo_install_show_container.png)
 
 if not, start the container
 
@@ -324,7 +348,7 @@ Then enter the container to use the mongoshell
 In this example the user is 'admin' and the psw is 'admin': change them according to the deployment
 
 ```bash
-docker exec -it mongo-mongo-1 mongosh -u admin -p admin
+docker exec -it stage-mongo-1 mongosh -u admin -p admin
 ```
 
 
@@ -366,7 +390,30 @@ cd  /opt/dedalus/docker/bundles/ds
 bash scripts/ds.sh compose create
 ```
 
-Now we check for the serviec to be up
+Now we check for the service to be up
 1. Open the haproxy stats , you will see a green row on the DISCOVERY row
 2. run "docker container ls" and see the container running
 3. Open the page "https://your.solution.com/xdiscovery-service/admin"
+
+
+## Device Manager deployment
+We used a version of Device Manager that has no DATABASE.
+The only configuration it has is the file "environments/stage/conf/device_manager-conf.xml"
+Check the device manager documentation to know how to use it
+
+### create the service
+
+Before creating a new service, to pull an image it necessary to [log in](#aws-login) to AWS 
+
+```bash
+cd  /opt/dedalus/docker/bundles/device_manager
+```
+- create the service
+```bash
+bash scripts/ds.sh compose create
+```
+
+Now we check for the service to be up
+1. Open the haproxy stats , you will see a green row on the DEVICE_MANAGER row
+2. run "docker container ls" and see the container running
+3. Open the page "https://your.solution.com/dmcompact"
