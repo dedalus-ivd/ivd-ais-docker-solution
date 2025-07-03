@@ -29,36 +29,14 @@ mongorestore --host HOSTNAME --port 27017 -u USERNAME -p PASSWORD --authenticati
 
 The below steps describes how to automate MongoDB backups inside a Docker container, with automatic deletion of backups older than 7 days.
 
-#### Step 1: Create the Backup Script
-Create a file named mongo_backup.sh with the following content:
+#### Step 1
+Execute the file(setup_mongo_backup.sh) located in /opt/dedalus/docker/bundles/mongo/scripts:
 ```bash
-#!/bin/bash
-
-# Rotate backups older than 7 days inside the container
-docker exec CONTAINER_NAME_OR_ID find /tmp -maxdepth 1 -type d -name 'mongodump-*' -mtime +7 -exec rm -rf {} \;
-
-# Load environment variables from .env file
-source /opt/dedalus/docker/test/mongo/env/mongo.env
-
-# Generate timestamped backup directory name
-TIMESTAMP=$(date +%Y%m%d_%H%M%S)
-BACKUP_DIR="/tmp/mongodump-$TIMESTAMP"
-
-# Run mongodump inside the container
-docker exec CONTAINER_NAME_OR_ID mongodump --host HOSTNAME --port 27017 -u "$MONGO_INITDB_ROOT_USERNAME" -p "$MONGO_INITDB_ROOT_PASSWORD" --authenticationDatabase admin --out "$BACKUP_DIR"
+chmod +x /opt/dedalus/docker/bundles/mongo/scripts/setup_mongo_backup.sh
 ```
 
-#### Step 2: Make the Script Executable
+#### Step 2
+Run the script:
 ```bash
-chmod +x /opt/dedalus/docker/test/mongo_backup.sh
-```
-
-#### Step 3: Schedule the Cron Job
-Edit the crontab using:
-```bash
-crontab -e
-```
-Add the following line to run the backup every day at 5 PM, and log the output to a file:
-```bash
-0 17 * * * /opt/dedalus/docker/test/mongo_backup.sh >> /tmp/mongo_backup.log 2>&1
+./opt/dedalus/docker/bundles/mongo/scripts/setup_mongo_backup.sh
 ```

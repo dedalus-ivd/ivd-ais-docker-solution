@@ -1,0 +1,33 @@
+#!/bin/bash
+
+# Define the backup script content
+BACKUP_SCRIPT="/opt/dedalus/docker/bundles/mongo/scripts/mongo_backup.sh"
+BACKUP_SCRIPT_CONTENT='#!/bin/bash
+
+# Rotate backups older than 7 days inside the container
+docker exec stage-mongo-1 find /tmp -maxdepth 1 -type d -name "mongodump-*" -mtime +7 -exec rm -rf {} \;
+
+# Load environment variables from .env file
+source /opt/dedalus/docker/bundles/mongo/environments/stage/env/compose.env
+
+# Generate timestamped backup directory name
+TIMESTAMP=$(date +%Y%m%d_%H%M%S)
+BACKUP_DIR="/tmp/mongodump-$TIMESTAMP"
+
+# Run mongodump inside the container
+docker exec stage-mongo-1 mongodump --host ivd-ais-docker-env-1-0-deployment-test.awsnet.ivdarch.cloud --port 27017 -u "$MONGO_INITDB_ROOT_USERNAME" -p "$MONGO_INITDB_ROOT_PASSWORD" --authenticationDatabase admin --out "$BACKUP_DIR"
+'
+
+# Create the backup script
+echo "$BACKUP_SCRIPT_CONTENT" > "$BACKUP_SCRIPT"
+
+# Make the backup script executable
+chmod +x "$BACKUP_SCRIPT"
+
+# Define the cron job
+CRON_JOB="0 17 * * * /opt/dedalus/docker/bundles/mongo/scripts/mongo_backup.sh >> /tmp/mongo_backup.log 2>&1"
+
+# Append the cron job to the crontab (avoiding duplicates)
+(crontab -l 2>/dev/null | grep -v "$BACKUP_SCRIPT" ; echo "$CRON_JOB") | crontab -
+
+echo "Mongo backup script created, made executable, and cron job scheduled."
