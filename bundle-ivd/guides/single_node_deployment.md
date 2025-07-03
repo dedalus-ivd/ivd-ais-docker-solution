@@ -387,7 +387,7 @@ cd  /opt/dedalus/docker/bundles/ds
 ```
 - create the service
 ```bash
-bash scripts/ds.sh compose create
+bash scripts/compose.sh stage create
 ```
 
 Now we check for the service to be up
@@ -410,7 +410,7 @@ cd  /opt/dedalus/docker/bundles/device_manager
 ```
 - create the service
 ```bash
-bash scripts/ds.sh compose create
+bash scripts/compose.sh stage create
 ```
 
 Now we check for the service to be up
