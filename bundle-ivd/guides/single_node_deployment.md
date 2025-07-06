@@ -423,6 +423,15 @@ Now we check for the service to be up
 2. run "docker container ls" and see the container running
 3. Open the page "https://your.solution.com/xdiscovery-service/admin"
 
+### Available commands via script:
+Scripts are meant to be launched from the ds folder
+- General form is "bash scripts/compose.sh ENV_NAME COMMAND
+- bash scripts/compose.sh stage create -> Creates the containers in the compose file and starts them
+- bash scripts/compose.sh stage stop -> Stops the containers in the compose file
+- bash scripts/compose.sh stage restart -> Restarts the containers in the compose file
+- bash scripts/compose.sh stage remove -> Stops the containers in the compose file and remove them
+- bash scripts/compose.sh stage recreate -> Stops the containers in the compose file, remove, create again and start them
+
 
 ## Device Manager deployment
 We used a version of Device Manager that has no DATABASE.
@@ -445,3 +454,12 @@ Now we check for the service to be up
 1. Open the haproxy stats , you will see a green row on the DEVICE_MANAGER row
 2. run "docker container ls" and see the container running
 3. Open the page "https://your.solution.com/dmcompact"
+
+### Available commands via script:
+Scripts are meant to be launched from the device_manager folder
+- General form is "bash scripts/compose.sh ENV_NAME COMMAND
+- bash scripts/compose.sh stage create -> Creates the containers in the compose file and starts them
+- bash scripts/compose.sh stage stop -> Stops the containers in the compose file
+- bash scripts/compose.sh stage restart -> Restarts the containers in the compose file
+- bash scripts/compose.sh stage remove -> Stops the containers in the compose file and remove them
+- bash scripts/compose.sh stage recreate -> Stops the containers in the compose file, remove, create again and start them
