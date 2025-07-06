@@ -235,6 +235,16 @@ docker container ls
 
 You should have an haproxy container running
 
+### Available commands via script:
+Scripts are meant to be launched from the haproxy folder
+- General form is "bash scripts/compose.sh ENV_NAME COMMAND
+- bash scripts/compose.sh stage create -> Creates the containers in the compose file and starts them
+- bash scripts/compose.sh stage stop -> Stops the containers in the compose file
+- bash scripts/compose.sh stage restart -> Restarts the containers in the compose file
+- bash scripts/compose.sh stage remove -> Stops the containers in the compose file and remove them
+- bash scripts/compose.sh stage recreate -> Stops the containers in the compose file, remove, create again and start them
+
+
 ### HAPROXY configuration
 If you deploy services that are already registered the default configuration is capable to handle them without doing anything.<br>
 To see if a service is already registered you need to go [here](https://confluence.dedalus.com/display/IAT/IVD+Services+-+deployment+info#IVDServicesdeploymentinfo-Servicesdeploymentinfo)<br>
@@ -265,6 +275,15 @@ By default the monitoring interface is under the port 27100
 3. The interface will ask to change the password
 4. Follow the guide [here](https://confluence.dedalus.com/display/IAT/Enterprise+Log+Monitoring+Solution+with+Loki%2C+Promtail%2C+and+Grafana+on+Docker+Swarm) at Step 3: configure Grafana.
 
+### Available commands via script:
+Scripts are meant to be launched from the monitoring folder
+- General form is "bash scripts/compose.sh ENV_NAME COMMAND
+- bash scripts/compose.sh stage create -> Creates the containers in the compose file and starts them
+- bash scripts/compose.sh stage stop -> Stops the containers in the compose file
+- bash scripts/compose.sh stage restart -> Restarts the containers in the compose file
+- bash scripts/compose.sh stage remove -> Stops the containers in the compose file and remove them
+- bash scripts/compose.sh stage recreate -> Stops the containers in the compose file, remove, create again and start them
+
 ## Mongo deployment (optional)
 Mongo docker deployment is only for stage environments
 
@@ -284,9 +303,18 @@ cd  /opt/dedalus/docker/bundles/mongo
 bash scripts/compose.sh stage create
 ```
 
+### Available commands via script:
+Scripts are meant to be launched from the mongo folder
+- General form is "bash scripts/compose.sh ENV_NAME COMMAND
+- bash scripts/compose.sh stage create -> Creates the containers in the compose file and starts them
+- bash scripts/compose.sh stage stop -> Stops the containers in the compose file
+- bash scripts/compose.sh stage restart -> Restarts the containers in the compose file
+- bash scripts/compose.sh stage remove -> Stops the containers in the compose file and remove them
+- bash scripts/compose.sh stage recreate -> Stops the containers in the compose file, remove, create again and start them
+
 # Single application deployment
 Basic steps
-- Download the service bundle (the zip fila that should respect the bundle structure)
+- Download the service bundle (the zip file that should respect the bundle structure)
 - Place it under the "bundles" folder among the others
 - Follow the service documentation to deploy and run it
 
