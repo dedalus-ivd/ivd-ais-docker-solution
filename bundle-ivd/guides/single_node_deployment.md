@@ -73,7 +73,7 @@ The  "global-env" bundle will containes shared common variable values
 
 ### services folders
 Each service needs to produce a release compose of these folders
-- compose file: a file named "docker-compose.yaml" that contains the definition of the service
+- compose file: a file named "compose-docker.yaml" that contains the definition of the service
 - scripts: where there are utily scripts
 - environments folder: in here there is everything will be splitted by environment
 - by default each service will release the "environments/stage" directory as default
@@ -94,8 +94,7 @@ ivdservice_AAA/<br>
 │       │   └── conf-file-AAA-2.xml<br>
 │       ├── data<br>
 │       ├── env<br>
-│       │   ├── compose.env<br>
-│       │   └── services.env<br>
+│       │   └── ivdservice_AAA.env<br>
 │       └── secrets<br>
 └── scripts<br>
 
