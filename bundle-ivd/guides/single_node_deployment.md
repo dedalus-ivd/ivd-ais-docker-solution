@@ -94,7 +94,8 @@ ivdservice_AAA/<br>
 │       │   └── conf-file-AAA-2.xml<br>
 │       ├── data<br>
 │       ├── env<br>
-│       │   └── ivdservice_AAA.env<br>
+│       │   ├── compose.env<br>
+│       │   └── services.env<br>
 │       └── secrets<br>
 └── scripts<br>
 
@@ -273,7 +274,7 @@ By default the monitoring interface is under the port 27100
 1. Log into the page https://your.soulution.env:27100
 2. Sign in with the creation username and password (admin / admin)
 3. The interface will ask to change the password
-4. Follow the guide [here](https://confluence.dedalus.com/display/IAT/Enterprise+Log+Monitoring+Solution+with+Loki%2C+Promtail%2C+and+Grafana+on+Docker+Swarm) at Step 3: configure Grafana.
+4. Follow the guide [here](https://confluence.dedalus.com/display/IAT/Enterprise+Log+Monitoring+Solution+with+Loki%2C+Promtail%2C+and+Grafana+on+Docker+Swarm#EnterpriseLogMonitoringSolutionwithLoki,Promtail,andGrafanaonDockerSwarm-Step3:ConfigureGrafana): skip the point 1 "access grafana" of the Step 3 and begin from "Add Loki Source"
 
 ### Available commands via script:
 Scripts are meant to be launched from the monitoring folder
@@ -333,18 +334,8 @@ To show the steps to follow for every single product deployment we will use the 
 For each product you need to check its own docker deployment manual
 In the first release of the IVD Bundle we cover the deployment of the Discovery Service 5.1.2
 
-### Bundle the DS (Optional)
-In this part we show how we bundled the solution they released.
-You can skip it and go directly to the "Setting the deployment"
-
+### Official guide
 - Look at the global instruction from DS, so we look into the confluence page of the DS, [here](https://confluence.dedalus.com/pages/viewpage.action?spaceKey=XVAL&title=xdiscovery-service+-+5.1.x#xdiscoveryservice5.1.x-DeployDiscoveryServiceonDockerusingDockerCompose)
-- in this case we are asked to download the zip file from [here](http://ci-assetrepo.noemalife.loc/artifactory/releases/eu/dedalus/x1v1/xdiscovery-service/5.1.3/xdiscovery-service-5.1.2.zip)
-- since the deployment does not follow the standards we need to arrange it.
-
-### Making the folder
-- create a new folder "ds" inside the bundles folder with the subfolders "environments/stage/conf" and "environments/stage/env"
-- from the release, copy the xdiscovery-service-5.1.2\x1v1\conf\xdiscovery-service into the conf folder
-- from the relase, copy the xdiscovery-service-5.1.2\x1v1\docker\.env file into the env folder and rename it services.env
 
 
 ### Setting the deployment 
@@ -422,6 +413,7 @@ Now we check for the service to be up
 1. Open the haproxy stats , you will see a green row on the DISCOVERY row
 2. run "docker container ls" and see the container running
 3. Open the page "https://your.solution.com/xdiscovery-service/admin"
+4. The default user and password are "dedalus/Dedalus1234"
 
 ### Available commands via script:
 Scripts are meant to be launched from the ds folder
@@ -431,6 +423,22 @@ Scripts are meant to be launched from the ds folder
 - bash scripts/compose.sh stage restart -> Restarts the containers in the compose file
 - bash scripts/compose.sh stage remove -> Stops the containers in the compose file and remove them
 - bash scripts/compose.sh stage recreate -> Stops the containers in the compose file, remove, create again and start them
+
+### Bundle the DS (Optional)
+<b>NB</b>: THIS PART IS NOT MANDATORY! The bundle-ivd already contains the folder for the DS version 5.1.2
+In this part we show how we bundled the solution released by the discovery services team.
+The target is the version 5.1.2
+
+
+- download the zip file from [here](http://ci-assetrepo.noemalife.loc/artifactory/releases/eu/dedalus/x1v1/xdiscovery-service/5.1.2/xdiscovery-service-5.1.2.zip)
+
+<b>Making the folder<b>
+- create a new folder "ds" inside the bundles folder with the subfolders "environments/stage/conf" and "environments/stage/env"
+- from the release, copy the xdiscovery-service-5.1.2\x1v1\conf\xdiscovery-service into the conf folder ("ds/environments/stage/conf")
+- from the relase, copy the xdiscovery-service-5.1.2\x1v1\docker\.env file into the "ds/environments/stage/env" folder and rename it services.env
+- add an empty file "ds/environments/stage/env/compose.env"
+- take the "compose.yaml" file from the ds directory in the bundle-ivd and change the version (if needed)
+- copy the scripts folder from the bundle-ivd/ds into the ds fodler you are making
 
 
 ## Device Manager deployment

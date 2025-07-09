@@ -47,7 +47,7 @@ case "$COMMAND" in
     "stop")
         stop;;
     "remove")
-        stop;;
+        remove;;
     "restart")
         restart;;
     "recreate")

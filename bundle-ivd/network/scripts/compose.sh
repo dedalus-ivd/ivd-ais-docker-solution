@@ -4,6 +4,10 @@ create() {
     docker compose -f ./docker-compose.yaml --env-file ../global-env/environments/$ENVIRONMENT/env/shared.env --env-file ./environments/$ENVIRONMENT/env/compose.env --all-resources create
 }
 
+remove() {
+    docker compose -f ./docker-compose.yaml --env-file ../global-env/environments/$ENVIRONMENT/env/shared.env --env-file ./environments/$ENVIRONMENT/env/compose.env --all-resources down
+}
+
 envs=("prod" "test" "stage" "dev" "valid")
 commands=("create" "remove")
 ENVIRONMENT=$1
