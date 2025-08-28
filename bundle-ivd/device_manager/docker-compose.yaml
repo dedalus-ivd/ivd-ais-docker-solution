@@ -4,20 +4,20 @@ services:
     restart: always
     networks:
       - global_ais
-    user: ${DEDALUS_DOCKER_USER}
+    user: ${DEVICEMANAGER_DOCKER_USER}
     logging:
         driver: "json-file"  # Set the logging driver
         options:
-            max-size: "10m"      # Maximum size in megabytes of log file before rotation
-            max-file: "3"        # Maximum number of log files to keep
+            max-size: ${DEVICEMANAGER_LOGGING_MAX_SIZE}      # Maximum size in megabytes of log file before rotation
+            max-file: ${DEVICEMANAGER_LOGGING_MAX_FILE}        # Maximum number of log files to keep
     deploy:
         resources:
             limits:
-                cpus: '0.6'
-                memory: '1500M'
+                cpus: ${DEVICEMANAGER_CPU_LIMITS}
+                memory: ${DEVICEMANAGER_MEM_LIMITS}
     volumes:
-        - ./environments/${AIS_WORKSPACE}/conf/device_manager-conf.xml:/opt/app-root/etc/dmserver-setup.xml
+        - ./environments/${DEVICEMANAGER_WORKSPACE}/conf/device_manager-conf.xml:/opt/app-root/etc/dmserver-setup.xml
 networks:
   global_ais:
-    name: ${SHARED_AIS_NETWORK}
+    name: ${DEVICEMANAGER_NETWORK}
     external: true

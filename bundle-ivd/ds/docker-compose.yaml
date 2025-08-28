@@ -7,21 +7,21 @@ services:
     environment:
         JAVA_OPTS: -XX:+ExitOnOutOfMemoryError -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=/opt/dumps
     env_file: 
-      - path: ./environments/${AIS_WORKSPACE}/env/services.env
-    user: ${DEDALUS_DOCKER_USER}
+      - path: ./environments/${DS_WORKSPACE}/env/services.env
+    user: ${DS_DOCKER_USER}
     logging:
         driver: "json-file"  # Set the logging driver
         options:
-            max-size: "10m"      # Maximum size in megabytes of log file before rotation
-            max-file: "3"        # Maximum number of log files to keep
+            max-size: ${DS_LOGGING_MAX_SIZE}      # Maximum size in megabytes of log file before rotation
+            max-file: ${DS_LOGGING_MAX_FILE}        # Maximum number of log files to keep
     deploy:
         resources:
             limits:
-                cpus: '0.6'
-                memory: '1500M'
+                cpus: ${DS_CPU_LIMITS}
+                memory: ${DS_MEM_LIMITS}
     volumes:
-        - ./environments/${AIS_WORKSPACE}/conf/:/tomcat/x1v1/conf/
+        - ./environments/${DS_WORKSPACE}/conf/:/tomcat/x1v1/conf/
 networks:
   global_ais:
-    name: ${SHARED_AIS_NETWORK}
+    name: ${DS_NETWORK}
     external: true

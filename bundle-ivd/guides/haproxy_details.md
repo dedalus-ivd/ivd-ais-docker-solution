@@ -53,3 +53,38 @@ At the server line, in the end  , there is how to resolve the name.
 For each backend we applied the standard suggestions from the security team EXCEPT for the <br>
 #http-response set-header Content-Security-Policy "default-src 'none';script-src 'self';img-src 'self';style-src 'self';"<br>
 because no GUI seems to work with tha
+
+## Variable Referencing in Bundles
+
+### Using Bridge Variables for Environment Configuration 
+
+All environment variables referenced in the docker-compose.yml and related files must use bridge variables defined in the bundle's .env file(compose.env, services.env). These bridge variables act as intermediaries between the global environment variables and the bundle configuration.
+
+### Defining Bridge Variables
+
+In the bundle’s .env file, define each bridge variable by mapping it to the corresponding global variable. For example:
+```bash
+BUNDLE_DB_HOST=${GLOBAL_DB_HOST}
+BUNDLE_MONGO_URL=${GLOBAL_MONGO_URL}
+BUNDLE_API_URL=${GLOBAL_API_URL}
+BUNDLE_SECRET_KEY=${GLOBAL_SECRET_KEY}
+```
+
+### Referencing Bridge Variables in Compose Files
+
+In your docker-compose.yml (or equivalent), reference the bridge variables instead of global variables. For example:
+```bash
+services:
+  my-service:
+    environment:
+      - DB_HOST=${BUNDLE_DB_HOST}
+      - MONGO_URL=${BUNDLE_MONGO_URL}
+      - API_URL=${BUNDLE_API_URL}
+      - SECRET_KEY=${BUNDLE_SECRET_KEY}
+```
+
+### Guidelines
+
+- Always define bridge variables in the bundle .env file.
+- Do not reference GLOBAL_* variables directly in service definitions.
+- Use the BUNDLE_*(replace BUNDLE with the actual service name) prefix to clearly indicate bridge variables.

@@ -2,43 +2,8 @@ services:
   haproxy:
     image: haproxy:2.8.15
     restart: always
-    environment:
-      - AIS_WORKSPACE=${AIS_WORKSPACE}
-      - SOLUTION_BASE_URL=${SOLUTION_BASE_URL}
-      - DS_SERVICE_NAME=${DS_SERVICE_NAME}
-      - DS_INTERNAL_PORT=${DS_INTERNAL_PORT}
-      - DEDALUS_DOCKER_USER=${DEDALUS_DOCKER_USER}
-      - HAPROXY_STATS_PORT=${HAPROXY_STATS_PORT}
-      - HAPROXY_HEALTH_CHECK_PORT=${HAPROXY_HEALTH_CHECK_PORT}
-      - HAPROXY_STATS_USER=${HAPROXY_STATS_USER}
-      - HAPROXY_STATS_PSW=${HAPROXY_STATS_PSW}
-      - GRAFANA_PORT=${GRAFANA_PORT}
-      - GRAFANA_INTERNAL_PORT=${GRAFANA_INTERNAL_PORT}
-      - GRAFANA_SERVICE_NAME=${GRAFANA_SERVICE_NAME}
-      - IVAIS_LM_IP=${IVAIS_LM_IP}
-      - IVAIS_LM_SERVICE_NAME=${IVAIS_LM_SERVICE_NAME}
-      - IVAIS_LM_PORT=${IVAIS_LM_PORT}
-      - IVAIS_LM_INTERNAL_PORT=${IVAIS_LM_INTERNAL_PORT}
-      - IVAIS_LM_PROCS_IP=${IVAIS_LM_PROCS_IP}
-      - IVAIS_LM_PROCS_SERVICE_NAME=${IVAIS_LM_PROCS_SERVICE_NAME}
-      - IVAIS_LM_PROCS_PORT=${IVAIS_LM_PROCS_PORT}
-      - IVAIS_LM_PROCS_INTERNAL_PORT=${IVAIS_LM_PROCS_INTERNAL_PORT}
-      - R4C_GATEWAY_SERVICE_NAME=${R4C_GATEWAY_SERVICE_NAME}
-      - R4C_GATEWAY_INTERNAL_PORT=${R4C_GATEWAY_INTERNAL_PORT}
-      - R4C_APPS_SERVICE_NAME=${R4C_APPS_SERVICE_NAME}
-      - R4C_APPS_INTERNAL_PORT=${R4C_APPS_INTERNAL_PORT}
-      - CORELAB_BE_SERVICE_NAME=${CORELAB_BE_SERVICE_NAME}
-      - CORELAB_BE_INTERNAL_PORT=${CORELAB_BE_INTERNAL_PORT}
-      - CORELAB_FE_SERVICE_NAME=${CORELAB_FE_SERVICE_NAME}
-      - CORELAB_FE_INTERNAL_PORT=${CORELAB_FE_INTERNAL_PORT}
-      - CORELAB_REPORTING_SERVICE_NAME=${CORELAB_REPORTING_SERVICE_NAME}
-      - CORELAB_REPORTING_INTERNAL_PORT=${CORELAB_REPORTING_INTERNAL_PORT}
-      - CORELAB_CDA_SERVICE_NAME=${CORELAB_CDA_SERVICE_NAME}
-      - CORELAB_CDA_INTERNAL_PORT=${CORELAB_CDA_INTERNAL_PORT}
-      - CORELAB_PRINT_SERVICE_NAME=${CORELAB_PRINT_SERVICE_NAME}
-      - CORELAB_PRINT_INTERNAL_PORT=${CORELAB_PRINT_INTERNAL_PORT}
-      - DEVICE_MANAGER_SERVICE_NAME=${DEVICE_MANAGER_SERVICE_NAME}
-      - DEVICE_MANAGER_INTERNAL_PORT=${DEVICE_MANAGER_INTERNAL_PORT}
+    env_file:
+      - path: ./environments/${HAPROXY_WORKSPACE}/env/services.env
     ports:
       - ${HTTPS_PORT}:${HTTPS_PORT}
       - ${GRAFANA_PORT}:${GRAFANA_PORT}
@@ -46,24 +11,24 @@ services:
       - ${HAPROXY_HEALTH_CHECK_PORT}:${HAPROXY_HEALTH_CHECK_PORT}
       - ${IVAIS_LM_PROCS_PORT}:${IVAIS_LM_PROCS_PORT}
     volumes:
-      - ./environments/${AIS_WORKSPACE}/conf:/usr/local/etc/haproxy:ro 
+      - ./environments/${HAPROXY_WORKSPACE}/conf:/usr/local/etc/haproxy:ro 
     networks:
       - global_ais
     sysctls:
       net.ipv4.ip_unprivileged_port_start: 0
-    user: ${DEDALUS_DOCKER_USER}
+    user: ${HAPROXY_DOCKER_USER}
     deploy:
         resources:
             limits:
-                cpus: '0.6'
-                memory: '1500M'
+                cpus: ${HAPROXY_CPU_LIMITS}
+                memory: ${HAPROXY_MEM_LIMITS}
     logging:
         driver: "json-file"  # Set the logging driver
         options:
-            max-size: "10m"      # Maximum size in megabytes of log file before rotation
-            max-file: "3"        # Maximum number of log files to keep
+          max-size: ${HAPROXY_LOGGING_MAX_SIZE}
+          max-file: ${HAPROXY_LOGGING_MAX_FILE}        # Maximum number of log files to keep
 
 networks:
   global_ais:
-    name: ${SHARED_AIS_NETWORK}
+    name: ${HAPROXY_NETWORK}
     external: true

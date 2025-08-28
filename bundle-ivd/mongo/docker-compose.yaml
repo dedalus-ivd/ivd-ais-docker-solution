@@ -15,17 +15,17 @@ services:
       - ${MONGO_PORT}:27017
     volumes:
       - /etc/localtime:/etc/localtime:ro
-      - ./environments/${AIS_WORKSPACE}/data:/data/db
-      - ./environments/${AIS_WORKSPACE}/mongo/conf:/data/config
+      - ./environments/${MONGO_WORKSPACE}/data:/data/db
+      - ./environments/${MONGO_WORKSPACE}/mongo/conf:/data/config
     networks:
       - global_ais
-    user: ${DEDALUS_DOCKER_USER}
+    user: ${MONGO_DOCKER_USER}
     logging:
         driver: "json-file"  # Set the logging driver
         options:
-            max-size: "10m"      # Maximum size in megabytes of log file before rotation
-            max-file: "3"        # Maximum number of log files to keep
+            max-size: ${MONGO_LOGGING_MAX_SIZE}      # Maximum size in megabytes of log file before rotation
+            max-file: ${MONGO_LOGGING_MAX_FILE}        # Maximum number of log files to keep
 networks:
   global_ais:
-    name: ${SHARED_AIS_NETWORK}
+    name: ${MONGO_NETWORK}
     external: true
