@@ -1,0 +1,115 @@
+#!/bin/bash
+COMPOSE_FILE="docker-compose.yaml"
+ENV_FILE="compose.env"
+ENVIRONMENT=""
+commands="bundle logs --help"
+envs=("prod" "test" "stage" "dev" "valid")
+bundle_commands=(" create " " start " " stop " " remove " " recreate " " restart ")
+
+main(){
+    if [[ ${bundle_commands[@]} =~ " "$1" " ]] ; then echo "yes "$COMMAND; else echo "no"; fi
+    # local COMMAND=$1
+    # if [[ ! ${commands[@]} =~ $COMMAND ]] ; then echo "ddocker: unknown command: ddocker "$COMMAND; exit; fi
+    # case "$COMMAND" in
+    #     "bundle")
+    #         bundle "$@"
+    #         exit
+    #         ;;
+    #     "logs")
+    #         ;;
+    #     "--help")
+    #         help_first_level;
+    #         exit;
+    #         ;;
+    # esac
+}
+
+check_in_array(){
+    local array=$1
+    local word=$2
+    echo "${array[*]}";exit;
+    for i in ${array[@]}
+    do
+        if [[ $i == $word ]]
+        then
+            exit "true"
+        fi
+    done
+    exit "false"
+}
+
+bundle(){
+    local actual_bundles="$(ls /opt/dedalus/docker/bundles | tr "\n" " ")"
+    local aa=()
+    local BUNDLE=$2
+    for i in $actual_bundles; do aa+=($i); done
+    
+    local check="$(check_in_array  "$BUNDLE" $aa )"
+    echo "$check"
+    # echo "check "$check
+    # if [ -z "$BUNDLE" ] ||  ( $check == 1 ) ; then echo "ddocker bundle: bundle not present "$BUNDLE;echo -e "\nActual bundles are:"$actual_bundles ;exit; fi
+    # ENVIRONMENT=$3
+    # if [ -z "$ENVIRONMENT" ] || [[ ! ${envs[@]} =~ $ENVIRONMENT ]] ; then echo "Wrong environment name: "$ENVIRONMENT;echo -e "\nActual environment are: "${envs[*]} ;exit; fi
+    # local COMMAND=$4
+    # if [ -z "$COMMAND" ] || [[ ! ${bundle_commands[@]} =~ $COMMAND ]] ; then echo "Wrong command name: "$COMMAND;echo -e "\nActual commands are: "${bundle_commands[*]} ;exit; fi
+    # echo $COMMAND
+    # cd /opt/dedalus/docker/bundles/$BUNDLE
+    # case "$COMMAND" in 
+    #     "create")
+    #         create;;
+    #     "start")
+    #         start;;
+    #     "stop")
+    #         stop;;
+    #     "remove")
+    #         remove;;
+    #     "restart")
+    #         restart;;
+    #     "recreate")
+    #         recreate;;
+    # esac
+}
+
+
+start(){
+    docker compose -f ./$COMPOSE_FILE --env-file ../global-env/environments/$ENVIRONMENT/env/shared.env --env-file ../global-env/environments/$ENVIRONMENT/env/proxy-map.env --env-file ../global-env/environments/$ENVIRONMENT/env/routes.env --env-file ./environments/$ENVIRONMENT/env/$ENV_FILE -p $ENVIRONMENT start
+}
+
+create() {
+    docker compose -f ./$COMPOSE_FILE --env-file ../global-env/environments/$ENVIRONMENT/env/shared.env --env-file ../global-env/environments/$ENVIRONMENT/env/proxy-map.env --env-file ../global-env/environments/$ENVIRONMENT/env/routes.env --env-file ./environments/$ENVIRONMENT/env/$ENV_FILE -p $ENVIRONMENT --all-resources create
+    start
+}
+
+stop(){
+    docker compose -f ./$COMPOSE_FILE --env-file ../global-env/environments/$ENVIRONMENT/env/shared.env --env-file ../global-env/environments/$ENVIRONMENT/env/proxy-map.env --env-file ../global-env/environments/$ENVIRONMENT/env/routes.env --env-file ./environments/$ENVIRONMENT/env/$ENV_FILE -p $ENVIRONMENT stop
+}
+
+remove(){
+    stop
+    docker compose -f ./$COMPOSE_FILE --env-file ../global-env/environments/$ENVIRONMENT/env/shared.env --env-file ../global-env/environments/$ENVIRONMENT/env/proxy-map.env --env-file ../global-env/environments/$ENVIRONMENT/env/routes.env --env-file ./environments/$ENVIRONMENT/env/$ENV_FILE -p $ENVIRONMENT --all-resources rm
+}
+
+restart(){
+    stop
+    start
+}
+
+recreate(){
+    remove
+    create
+}
+
+
+
+help_first_level(){
+    local bundles="$(ls /opt/dedalus/docker/bundles)"
+    echo "Usage: ddocker COMMAND
+
+    Commands:
+        bundle: Manage bundles (create, start, etc..)
+        logs: Manage logs from bundles
+    "
+}
+
+
+main "$@"
