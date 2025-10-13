@@ -1,0 +1,60 @@
+#/usr/bin/env bash
+
+first_level_commands="bundle logs asdasd -version --help"
+first_level_options="-version --help"
+
+bundle_commands="create start stop remove recreate restart"
+bundle_environments="stage test prod valid dev cert"
+
+_ddocker () { 
+  local cur prev opts
+  COMPREPLY=()
+  cur="${COMP_WORDS[COMP_CWORD]}"
+  
+  opts="${first_level_commands}"
+
+  if [[ ${cur} == -* || ${COMP_CWORD} -eq 1 ]] ; then
+ 		COMPREPLY=( $(compgen -W "${opts}" -- ${cur}) )
+ 		return 0
+ 	fi
+
+  first="${COMP_WORDS[1]}"
+  case "${first}" in
+    bundle)
+        _bundle
+        ;;
+  esac
+}
+
+_bundle(){
+  local cur prev opts
+  COMPREPLY=()
+  cur="${COMP_WORDS[COMP_CWORD]}"
+  prev="${COMP_WORDS[COMP_CWORD-1]}"
+  opts="${first_level_commands}"
+
+  if [[ ${cur} == -* || ${COMP_CWORD} -eq 2 ]] ; then
+ 		COMPREPLY=( $(compgen -W "$(ls /opt/dedalus/docker/bundles )" -- ${cur}) )
+ 		return 0
+ 	fi
+  if [ ${COMP_CWORD} -eq 3 ] ; then
+ 		COMPREPLY=( $(compgen -W "${bundle_environments}" -- ${cur}) )
+ 		return 0
+ 	fi
+  if [ ${COMP_CWORD} -eq 4 ] ; then
+ 		COMPREPLY=( $(compgen -W "${bundle_commands}" -- ${cur}) )
+ 		return 0
+ 	fi
+  
+}
+
+bundle_third_level(){
+  local comm="${COMP_WORDS[1]}"
+  case "$comm" in
+    "bundle")
+      COMPREPLY=($(compgen -W "$(ls /opt/dedalus/docker/bundles)" "${COMP_WORDS[2]}"))
+      ;;
+  esac
+}
+
+complete -o nospace -F _ddocker ddocker

@@ -2,7 +2,7 @@
 BUNDLE=ds
 COMPOSE_FILE="docker-compose.yaml"
 ENV_FILE="compose.env"
-envs=("prod" "test" "stage" "dev" "valid")
+envs=("prod" "test" "stage" "dev" "valid","cert")
 commands=("create" "start" "stop" "remove" "recreate" restart"")
 ENVIRONMENT=$1
 COMMAND=$2
