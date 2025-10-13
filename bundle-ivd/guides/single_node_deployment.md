@@ -126,7 +126,7 @@ NB: it you are using windows, use an editor that keeps the Unix EOL, not the win
 1. Prepare your deployment on the workstation you are using: that means that you have to put the files under a folder that is called "bundles"
 It has to look like the folder structure you see [here](https://confluence.dedalus.com/display/IAT/Docker+deployment+-+component+requirements#Dockerdeploymentcomponentrequirements-Deploymentstructure)
 
-2. Download the [bundle-ivd](https://github.com/dedalus-ivd/ivd-ais-docker-solution/releases/download/v1.0/bundle-ivd.zip) that will contain the network, mongo, haproxy, monitoring and the env folder. Unzip it into your pc and then copy the content inside the bundles folder you prepared for the deployment.
+2. Download the [bundle-ivd.zip](https://github.com/dedalus-ivd/ivd-ais-docker-solution/releases) that will contain the network, mongo, haproxy, monitoring and the env folder. Unzip it into your pc and then copy the content inside the bundles folder you prepared for the deployment.
 You will have: <br>
 bundles/<br>
 ├── device_manager<br>

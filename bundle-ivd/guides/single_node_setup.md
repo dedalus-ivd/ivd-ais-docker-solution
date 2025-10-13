@@ -29,6 +29,9 @@ NB
 - Docker engine and docker compose installed
 - A user that can be sudoer
 
+To help in the installation you can download the single_node-ivd-docker-installer.zip
+ from [here](https://github.com/dedalus-ivd/ivd-ais-docker-solution/releases)<br>
+
 It's possible simply to launch the script single_node_setup.sh or simply copy the commands in the console and apply.
 After it you need to do only the steps from the 10th
 
